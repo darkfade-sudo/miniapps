@@ -23,5 +23,9 @@ Ten small apps in a single HTML file, with no libraries or installs needed. Just
 
 ## How to run
 
-Download the repo and open `hub.html` in any browser.
+Download the repo and open `index.html` in any browser.
+
+## Live demo
+
+https://darkfade-sudo.github.io/miniapps/
 
