@@ -1,0 +1,1633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mini Apps Hub</title>
+<style>
+:root {
+--bg-color: #f4f6f9;
+--card-bg: #ffffff;
+--text-color: #333333;
+--text-muted: #666666;
+--primary-color: #3b82f6;
+--primary-hover: #2563eb;
+--border-color: #e5e7eb;
+--shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+--danger: #ef4444;
+--success: #10b981;
+--warning: #f59e0b;
+}
+[data-theme="dark"] {
+--bg-color: #111827;
+--card-bg: #1f2937;
+--text-color: #f3f4f6;
+--text-muted: #9ca3af;
+--primary-color: #60a5fa;
+--primary-hover: #3b82f6;
+--border-color: #374151;
+--shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+--danger: #f87171;
+--success: #34d399;
+--warning: #fbbf24;
+}
+* {
+box-sizing: border-box;
+margin: 0;
+padding: 0;
+font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+body {
+background-color: var(--bg-color);
+color: var(--text-color);
+line-height: 1.5;
+padding-top: 70px;
+}
+header {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+background-color: var(--card-bg);
+border-bottom: 1px solid var(--border-color);
+box-shadow: var(--shadow);
+z-index: 1000;
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 0.75rem 1.5rem;
+}
+.logo {
+font-size: 1.25rem;
+font-weight: bold;
+color: var(--primary-color);
+}
+.theme-toggle {
+background: none;
+border: 1px solid var(--border-color);
+color: var(--text-color);
+padding: 0.5rem 1rem;
+border-radius: 0.375rem;
+cursor: pointer;
+font-weight: 500;
+}
+.theme-toggle:hover {
+background-color: var(--border-color);
+}
+nav {
+display: flex;
+gap: 0.5rem;
+overflow-x: auto;
+padding: 0.5rem 1.5rem;
+background-color: var(--card-bg);
+border-bottom: 1px solid var(--border-color);
+white-space: nowrap;
+scrollbar-width: thin;
+}
+nav::-webkit-scrollbar {
+height: 4px;
+}
+nav::-webkit-scrollbar-thumb {
+background-color: var(--border-color);
+border-radius: 2px;
+}
+.nav-btn {
+background: none;
+border: none;
+color: var(--text-muted);
+padding: 0.5rem 1rem;
+border-radius: 0.375rem;
+cursor: pointer;
+font-weight: 500;
+font-size: 0.95rem;
+}
+.nav-btn:hover {
+color: var(--text-color);
+background-color: var(--bg-color);
+}
+.nav-btn.active {
+color: var(--primary-color);
+background-color: var(--bg-color);
+font-weight: 600;
+}
+main {
+max-width: 1000px;
+margin: 2rem auto;
+padding: 0 1rem;
+}
+.app-section {
+display: none;
+background-color: var(--card-bg);
+border: 1px solid var(--border-color);
+border-radius: 0.75rem;
+box-shadow: var(--shadow);
+padding: 2rem;
+margin-bottom: 2rem;
+}
+.app-section.active {
+display: block;
+}
+h2 {
+font-size: 1.5rem;
+margin-bottom: 1.5rem;
+color: var(--text-color);
+border-bottom: 2px solid var(--border-color);
+padding-bottom: 0.5rem;
+}
+input[type="text"], input[type="number"], input[type="date"], select, textarea {
+width: 100%;
+padding: 0.75rem;
+border: 1px solid var(--border-color);
+border-radius: 0.375rem;
+background-color: var(--card-bg);
+color: var(--text-color);
+font-size: 1rem;
+margin-bottom: 1rem;
+}
+input:focus, select:focus, textarea:focus {
+outline: none;
+border-color: var(--primary-color);
+}
+button.primary-btn {
+background-color: var(--primary-color);
+color: white;
+border: none;
+padding: 0.75rem 1.5rem;
+border-radius: 0.375rem;
+cursor: pointer;
+font-weight: 600;
+font-size: 1rem;
+width: 100%;
+margin-bottom: 1rem;
+}
+button.primary-btn:hover {
+background-color: var(--primary-hover);
+}
+.flex-row {
+display: flex;
+gap: 1rem;
+margin-bottom: 1rem;
+}
+.flex-row input, .flex-row select, .flex-row button {
+margin-bottom: 0;
+}
+.todo-filters, .notes-filters {
+display: flex;
+gap: 0.5rem;
+margin-bottom: 1rem;
+flex-wrap: wrap;
+}
+.filter-btn {
+background: none;
+border: 1px solid var(--border-color);
+color: var(--text-muted);
+padding: 0.375rem 0.75rem;
+border-radius: 0.375rem;
+cursor: pointer;
+font-size: 0.875rem;
+}
+.filter-btn.active {
+background-color: var(--primary-color);
+color: white;
+border-color: var(--primary-color);
+}
+.todo-list, .notes-list, .habits-list, .expenses-list, .flashcard-container {
+list-style: none;
+}
+.todo-item, .note-item, .habit-item, .expense-item {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 0.75rem;
+border: 1px solid var(--border-color);
+border-radius: 0.375rem;
+margin-bottom: 0.5rem;
+background-color: var(--card-bg);
+}
+.todo-item.completed span {
+text-decoration: line-through;
+color: var(--text-muted);
+}
+.todo-actions, .note-actions, .habit-actions, .expense-actions {
+display: flex;
+gap: 0.5rem;
+}
+.action-btn {
+background: none;
+border: none;
+cursor: pointer;
+color: var(--text-muted);
+padding: 0.25rem;
+font-size: 1rem;
+}
+.action-btn:hover {
+color: var(--text-color);
+}
+.action-btn.delete:hover {
+color: var(--danger);
+}
+.action-btn.edit:hover {
+color: var(--warning);
+}
+.notes-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+gap: 1rem;
+}
+.note-card {
+border: 1px solid var(--border-color);
+border-radius: 0.5rem;
+padding: 1rem;
+display: flex;
+flex-direction: column;
+justify-content: space-between;
+min-height: 150px;
+position: relative;
+}
+.note-content {
+word-break: break-word;
+margin-bottom: 1rem;
+white-space: pre-wrap;
+}
+.note-footer {
+display: flex;
+justify-content: space-between;
+align-items: center;
+font-size: 0.75rem;
+color: var(--text-muted);
+border-top: 1px solid var(--border-color);
+padding-top: 0.5rem;
+}
+.tag-badge {
+padding: 0.125rem 0.375rem;
+border-radius: 0.25rem;
+font-size: 0.75rem;
+color: white;
+font-weight: 600;
+}
+.tag-work { background-color: #3b82f6; }
+.tag-personal { background-color: #10b981; }
+.tag-ideas { background-color: #f59e0b; }
+.tag-todo { background-color: #ef4444; }
+.timer-display {
+font-size: 4rem;
+font-weight: bold;
+text-align: center;
+margin: 2rem 0;
+font-variant-numeric: tabular-nums;
+}
+.timer-controls {
+display: flex;
+justify-content: center;
+gap: 1rem;
+margin-bottom: 1.5rem;
+}
+.timer-btn {
+padding: 0.5rem 1.5rem;
+border: none;
+border-radius: 0.375rem;
+cursor: pointer;
+font-weight: 600;
+font-size: 1rem;
+}
+.timer-btn.start { background-color: var(--success); color: white; }
+.timer-btn.pause { background-color: var(--warning); color: white; }
+.timer-btn.reset { background-color: var(--danger); color: white; }
+.timer-modes {
+display: flex;
+justify-content: center;
+gap: 0.5rem;
+margin-bottom: 1.5rem;
+}
+.mode-btn {
+background: none;
+border: 1px solid var(--border-color);
+padding: 0.5rem 1rem;
+border-radius: 0.375rem;
+cursor: pointer;
+color: var(--text-muted);
+}
+.mode-btn.active {
+background-color: var(--primary-color);
+color: white;
+border-color: var(--primary-color);
+}
+.session-counter {
+text-align: center;
+color: var(--text-muted);
+font-size: 1.1rem;
+}
+.expense-summary {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+gap: 1rem;
+margin-bottom: 1.5rem;
+}
+.summary-card {
+background-color: var(--bg-color);
+border: 1px solid var(--border-color);
+padding: 1rem;
+border-radius: 0.5rem;
+text-align: center;
+}
+.summary-card h3 {
+font-size: 0.875rem;
+color: var(--text-muted);
+margin-bottom: 0.5rem;
+}
+.summary-card p {
+font-size: 1.25rem;
+font-weight: bold;
+}
+.habit-days {
+display: flex;
+gap: 0.5rem;
+}
+.habit-day-checkbox {
+display: flex;
+flex-direction: column;
+align-items: center;
+font-size: 0.75rem;
+color: var(--text-muted);
+}
+.habit-day-checkbox input {
+margin-bottom: 0.25rem;
+cursor: pointer;
+}
+.memory-grid {
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+gap: 0.75rem;
+max-width: 400px;
+margin: 0 auto 1.5rem auto;
+}
+.memory-card {
+aspect-ratio: 1;
+background-color: var(--primary-color);
+border-radius: 0.5rem;
+display: flex;
+justify-content: center;
+align-items: center;
+font-size: 2rem;
+cursor: pointer;
+user-select: none;
+transform: rotateY(0deg);
+transition: transform 0.3s ease, background-color 0.2s ease;
+}
+.memory-card.flipped, .memory-card.matched {
+background-color: var(--card-bg);
+border: 2px solid var(--primary-color);
+transform: rotateY(180deg);
+}
+.calc-grid {
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+gap: 0.5rem;
+max-width: 350px;
+margin: 0 auto;
+}
+.calc-display {
+grid-column: span 4;
+background-color: var(--bg-color);
+border: 1px solid var(--border-color);
+padding: 1rem;
+font-size: 2rem;
+text-align: right;
+border-radius: 0.375rem;
+margin-bottom: 0.5rem;
+word-break: break-all;
+font-variant-numeric: tabular-nums;
+}
+.calc-btn {
+padding: 1rem;
+font-size: 1.25rem;
+border: 1px solid var(--border-color);
+background-color: var(--card-bg);
+color: var(--text-color);
+border-radius: 0.375rem;
+cursor: pointer;
+}
+.calc-btn:hover {
+background-color: var(--border-color);
+}
+.calc-btn.operator {
+background-color: var(--primary-color);
+color: white;
+border-color: var(--primary-color);
+}
+.calc-btn.operator:hover {
+background-color: var(--primary-hover);
+}
+.calc-history {
+max-width: 350px;
+margin: 1rem auto 0 auto;
+font-size: 0.875rem;
+color: var(--text-muted);
+max-height: 100px;
+overflow-y: auto;
+border-top: 1px solid var(--border-color);
+padding-top: 0.5rem;
+}
+.quiz-container {
+max-width: 600px;
+margin: 0 auto;
+}
+.quiz-options {
+display: flex;
+flex-direction: column;
+gap: 0.5rem;
+margin-top: 1rem;
+}
+.quiz-option-btn {
+padding: 0.75rem;
+border: 1px solid var(--border-color);
+background-color: var(--card-bg);
+color: var(--text-color);
+border-radius: 0.375rem;
+cursor: pointer;
+text-align: left;
+font-size: 1rem;
+}
+.quiz-option-btn:hover:not(:disabled) {
+background-color: var(--border-color);
+}
+.quiz-option-btn.correct {
+background-color: var(--success);
+color: white;
+border-color: var(--success);
+}
+.quiz-option-btn.incorrect {
+background-color: var(--danger);
+color: white;
+border-color: var(--danger);
+}
+.quiz-header {
+display: flex;
+justify-content: space-between;
+margin-bottom: 1rem;
+font-weight: bold;
+color: var(--text-muted);
+}
+.snake-wrapper {
+display: flex;
+flex-direction: column;
+align-items: center;
+}
+canvas {
+background-color: #000;
+border: 2px solid var(--border-color);
+border-radius: 0.375rem;
+box-shadow: var(--shadow);
+max-width: 100%;
+height: auto;
+}
+.flashcard-wrapper {
+max-width: 500px;
+margin: 0 auto;
+text-align: center;
+}
+.flashcard {
+width: 100%;
+height: 250px;
+border: 1px solid var(--border-color);
+border-radius: 0.75rem;
+background-color: var(--card-bg);
+box-shadow: var(--shadow);
+display: flex;
+justify-content: center;
+align-items: center;
+padding: 2rem;
+cursor: pointer;
+font-size: 1.25rem;
+margin-bottom: 1rem;
+position: relative;
+user-select: none;
+transform-style: preserve-3d;
+transition: transform 0.4s ease;
+}
+.flashcard.flipped {
+transform: rotateY(180deg);
+}
+.flashcard-content {
+width: 100%;
+height: 100%;
+display: flex;
+justify-content: center;
+align-items: center;
+text-align: center;
+position: absolute;
+backface-visibility: hidden;
+}
+.flashcard-back {
+transform: rotateY(180deg);
+color: var(--primary-color);
+}
+.flashcard-controls {
+display: flex;
+justify-content: space-between;
+gap: 1rem;
+}
+@media (max-width: 768px) {
+header {
+padding: 0.5rem 1rem;
+}
+nav {
+padding: 0.5rem 1rem;
+}
+.app-section {
+padding: 1rem;
+}
+.memory-grid {
+grid-template-columns: repeat(4, 1fr);
+max-width: 300px;
+}
+}
+</style>
+</head>
+<body data-theme="light">
+<header>
+<div class="logo">Mini Apps Hub</div>
+<button class="theme-toggle" id="themeToggleBtn">Dark Theme</button>
+</header>
+<nav id="appNav">
+<button class="nav-btn active" data-target="todoApp">To-Do</button>
+<button class="nav-btn" data-target="notesApp">Notes</button>
+<button class="nav-btn" data-target="pomodoroApp">Pomodoro</button>
+<button class="nav-btn" data-target="expenseApp">Expenses</button>
+<button class="nav-btn" data-target="habitApp">Habits</button>
+<button class="nav-btn" data-target="memoryApp">Memory</button>
+<button class="nav-btn" data-target="calcApp">Calculator</button>
+<button class="nav-btn" data-target="quizApp">Quiz</button>
+<button class="nav-btn" data-target="snakeApp">Snake</button>
+<button class="nav-btn" data-target="flashcardApp">Flashcards</button>
+</nav>
+<main>
+<section id="todoApp" class="app-section active">
+<h2>To-Do List</h2>
+<form id="todoForm">
+<div class="flex-row">
+<input type="text" id="todoInput" placeholder="Add a new task..." required>
+<button type="submit" class="primary-btn" style="width: auto;">Add Task</button>
+</div>
+</form>
+<div class="todo-filters">
+<button class="filter-btn active" data-filter="all">All</button>
+<button class="filter-btn" data-filter="active">Active</button>
+<button class="filter-btn" data-filter="completed">Completed</button>
+</div>
+<ul class="todo-list" id="todoList"></ul>
+</section>
+<section id="notesApp" class="app-section">
+<h2>Notes App</h2>
+<form id="noteForm">
+<input type="text" id="noteTitle" placeholder="Note Title..." required>
+<textarea id="noteContent" placeholder="Write your note here..." rows="4" required></textarea>
+<div class="flex-row">
+<select id="noteTag">
+<option value="work">Work</option>
+<option value="personal">Personal</option>
+<option value="ideas">Ideas</option>
+<option value="todo">Todo</option>
+</select>
+<button type="submit" class="primary-btn" style="width: auto;">Save Note</button>
+</div>
+</form>
+<input type="text" id="noteSearch" placeholder="Search notes...">
+<div class="notes-filters" id="noteTagFilters">
+<button class="filter-btn active" data-tag="all">All Tags</button>
+<button class="filter-btn" data-tag="work">Work</button>
+<button class="filter-btn" data-tag="personal">Personal</button>
+<button class="filter-btn" data-tag="ideas">Ideas</button>
+<button class="filter-btn" data-tag="todo">Todo</button>
+</div>
+<div class="notes-grid" id="notesGrid"></div>
+</section>
+<section id="pomodoroApp" class="app-section">
+<h2>Pomodoro Focus Timer</h2>
+<div class="timer-modes">
+<button class="mode-btn active" data-mode="work">Work (25m)</button>
+<button class="mode-btn" data-mode="shortBreak">Short Break (5m)</button>
+<button class="mode-btn" data-mode="longBreak">Long Break (15m)</button>
+</div>
+<div class="timer-display" id="timerDisplay">25:00</div>
+<div class="timer-controls">
+<button class="timer-btn start" id="timerStartBtn">Start</button>
+<button class="timer-btn pause" id="timerPauseBtn" disabled>Pause</button>
+<button class="timer-btn reset" id="timerResetBtn">Reset</button>
+</div>
+<div class="session-counter" id="sessionCounter">Completed Sessions: 0</div>
+</section>
+<section id="expenseApp" class="app-section">
+<h2>Expense Tracker</h2>
+<div class="expense-summary">
+<div class="summary-card">
+<h3>Total Expenses</h3>
+<p id="totalExpenseAmount">$0.00</p>
+</div>
+<div class="summary-card">
+<h3>Food & Dining</h3>
+<p id="foodExpenseAmount">$0.00</p>
+</div>
+<div class="summary-card">
+<h3>Bills & Utilities</h3>
+<p id="billsExpenseAmount">$0.00</p>
+</div>
+<div class="summary-card">
+<h3>Entertainment</h3>
+<p id="entertainmentExpenseAmount">$0.00</p>
+</div>
+</div>
+<form id="expenseForm">
+<input type="text" id="expenseTitle" placeholder="Expense description..." required>
+<input type="number" id="expenseAmount" placeholder="Amount ($)" step="0.01" required>
+<div class="flex-row">
+<select id="expenseCategory">
+<option value="Food">Food</option>
+<option value="Bills">Bills</option>
+<option value="Entertainment">Entertainment</option>
+<option value="Other">Other</option>
+</select>
+<input type="date" id="expenseDate" required>
+</div>
+<button type="submit" class="primary-btn">Add Expense</button>
+</form>
+<ul class="expenses-list" id="expenseList"></ul>
+</section>
+<section id="habitApp" class="app-section">
+<h2>Habit Tracker</h2>
+<form id="habitForm">
+<div class="flex-row">
+<input type="text" id="habitInput" placeholder="New habit name..." required>
+<button type="submit" class="primary-btn" style="width: auto;">Add Habit</button>
+</div>
+</form>
+<ul class="habits-list" id="habitList"></ul>
+</section>
+<section id="memoryApp" class="app-section">
+<h2>Memory Card Matching Game</h2>
+<div style="text-align: center; margin-bottom: 1rem; color: var(--text-muted);">
+Moves: <span id="memoryMoves">0</span> | Matches: <span id="memoryMatches">0</span> / 6
+</div>
+<div class="memory-grid" id="memoryGrid"></div>
+<button class="primary-btn" id="memoryRestartBtn" style="max-width: 200px; margin: 0 auto; display: block;">Restart Game</button>
+</section>
+<section id="calcApp" class="app-section">
+<h2>Calculator</h2>
+<div class="calc-grid">
+<div class="calc-display" id="calcDisplay">0</div>
+<button class="calc-btn" data-action="clear">C</button>
+<button class="calc-btn" data-action="del">DEL</button>
+<button class="calc-btn operator" data-value="%">%</button>
+<button class="calc-btn operator" data-value="/">÷</button>
+<button class="calc-btn" data-value="7">7</button>
+<button class="calc-btn" data-value="8">8</button>
+<button class="calc-btn" data-value="9">9</button>
+<button class="calc-btn operator" data-value="*">×</button>
+<button class="calc-btn" data-value="4">4</button>
+<button class="calc-btn" data-value="5">5</button>
+<button class="calc-btn" data-value="6">6</button>
+<button class="calc-btn operator" data-value="-">-</button>
+<button class="calc-btn" data-value="1">1</button>
+<button class="calc-btn" data-value="2">2</button>
+<button class="calc-btn" data-value="3">3</button>
+<button class="calc-btn operator" data-value="+">+</button>
+<button class="calc-btn" data-value="0" style="grid-column: span 2;">0</button>
+<button class="calc-btn" data-value=".">.</button>
+<button class="calc-btn operator" data-action="calculate">=</button>
+</div>
+<div class="calc-history" id="calcHistory"></div>
+</section>
+<section id="quizApp" class="app-section">
+<h2>Quiz Game</h2>
+<div class="quiz-container" id="quizContainer">
+<div id="quizStartScreen">
+<p style="margin-bottom: 1rem; text-align: center;">Test your general knowledge with this 5-question quiz!</p>
+<button class="primary-btn" id="quizStartBtn">Start Quiz</button>
+</div>
+<div id="quizGameScreen" style="display: none;">
+<div class="quiz-header">
+<span id="quizQuestionCount">Question 1 of 5</span>
+<span id="quizTimer">Time: 15s</span>
+</div>
+<h3 id="quizQuestionText" style="margin-bottom: 1rem; border: none; padding: 0;"></h3>
+<div class="quiz-options" id="quizOptionsList"></div>
+</div>
+<div id="quizEndScreen" style="display: none; text-align: center;">
+<h3 style="border: none; padding: 0;">Quiz Complete!</h3>
+<p id="quizFinalScore" style="font-size: 1.5rem; margin: 1rem 0; font-weight: bold;"></p>
+<button class="primary-btn" id="quizRestartBtn" style="max-width: 200px; margin: 0 auto;">Play Again</button>
+</div>
+</div>
+</section>
+<section id="snakeApp" class="app-section">
+<h2>Snake Game</h2>
+<div class="snake-wrapper">
+<div style="margin-bottom: 0.5rem; font-weight: bold;">Score: <span id="snakeScore">0</span> | High Score: <span id="snakeHighScore">0</span></div>
+<canvas id="snakeCanvas" width="400" height="400"></canvas>
+<div style="margin-top: 1rem; display: flex; gap: 1rem;">
+<button class="primary-btn" id="snakeStartBtn" style="width: auto; margin-bottom: 0;">Start / Pause</button>
+<button class="primary-btn" id="snakeResetBtn" style="width: auto; margin-bottom: 0; background-color: var(--danger);">Reset</button>
+</div>
+<p style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--text-muted);">Use Arrow Keys to play</p>
+</div>
+</section>
+<section id="flashcardApp" class="app-section">
+<h2>Flashcards</h2>
+<div class="flashcard-wrapper">
+<div style="margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
+<span id="flashcardCounter" style="color: var(--text-muted); font-weight: bold;">Card 1 of 4</span>
+<button class="primary-btn" id="flashcardShuffleBtn" style="width: auto; margin-bottom: 0; padding: 0.375rem 0.75rem; font-size: 0.875rem;">Shuffle</button>
+</div>
+<div class="flashcard" id="flashcardElement">
+<div class="flashcard-content flashcard-front" id="flashcardFrontText">Front</div>
+<div class="flashcard-content flashcard-back" id="flashcardBackText">Back</div>
+</div>
+<div class="flashcard-controls">
+<button class="primary-btn" id="flashcardPrevBtn">Previous</button>
+<button class="primary-btn" id="flashcardNextBtn">Next</button>
+</div>
+<div style="margin-top: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+<h3 style="font-size: 1rem; border: none; padding: 0; margin-bottom: 0.5rem;">Add New Flashcard</h3>
+<form id="flashcardForm">
+<input type="text" id="flashcardFrontInput" placeholder="Front text..." required>
+<input type="text" id="flashcardBackInput" placeholder="Back text..." required>
+<button type="submit" class="primary-btn">Add Card</button>
+</form>
+</div>
+</div>
+</section>
+</main>
+<script>
+// Theme Management
+const themeToggleBtn = document.getElementById('themeToggleBtn');
+const body = document.body;
+const savedTheme = localStorage.getItem('hub_theme') || 'light';
+body.setAttribute('data-theme', savedTheme);
+themeToggleBtn.textContent = savedTheme === 'dark' ? 'Light Theme' : 'Dark Theme';
+themeToggleBtn.addEventListener('click', () => {
+const currentTheme = body.getAttribute('data-theme');
+const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+body.setAttribute('data-theme', newTheme);
+localStorage.setItem('hub_theme', newTheme);
+themeToggleBtn.textContent = newTheme === 'dark' ? 'Light Theme' : 'Dark Theme';
+});
+
+// Navigation Management
+const navBtns = document.querySelectorAll('.nav-btn');
+const appSections = document.querySelectorAll('.app-section');
+navBtns.forEach(btn => {
+btn.addEventListener('click', () => {
+navBtns.forEach(b => b.classList.remove('active'));
+appSections.forEach(s => s.classList.remove('active'));
+btn.classList.add('active');
+const targetId = btn.getAttribute('data-target');
+document.getElementById(targetId).classList.add('active');
+});
+});
+
+// App 1: To-Do List
+const todoForm = document.getElementById('todoForm');
+const todoInput = document.getElementById('todoInput');
+const todoList = document.getElementById('todoList');
+const filterBtns = document.querySelectorAll('.todo-filters .filter-btn');
+let todos = JSON.parse(localStorage.getItem('hub_todos')) || [
+{ id: 1, text: 'Welcome to Mini Apps Hub!', completed: false },
+{ id: 2, text: 'Explore all 10 apps built-in', completed: true }
+];
+let currentTodoFilter = 'all';
+
+function saveTodos() {
+localStorage.setItem('hub_todos', JSON.stringify(todos));
+}
+
+function renderTodos() {
+todoList.innerHTML = '';
+const filtered = todos.filter(todo => {
+if (currentTodoFilter === 'active') return !todo.completed;
+if (currentTodoFilter === 'completed') return todo.completed;
+return true;
+});
+if (filtered.length === 0) {
+todoList.innerHTML = '<li style="text-align: center; color: var(--text-muted); padding: 1rem;">No tasks found.</li>';
+return;
+}
+filtered.forEach(todo => {
+const li = document.createElement('li');
+li.className = `todo-item ${todo.completed ? 'completed' : ''}`;
+li.innerHTML = `
+<div style="display: flex; align-items: center; gap: 0.75rem; flex-grow: 1;">
+<input type="checkbox" ${todo.completed ? 'checked' : ''} onchange="toggleTodo(${todo.id})" style="width: 1.2rem; height: 1.2rem; cursor: pointer;">
+<span style="flex-grow: 1; word-break: break-word;">${escapeHtml(todo.text)}</span>
+</div>
+<div class="todo-actions">
+<button class="action-btn edit" onclick="editTodo(${todo.id})" title="Edit">✎</button>
+<button class="action-btn delete" onclick="deleteTodo(${todo.id})" title="Delete">🗑</button>
+</div>
+`;
+todoList.appendChild(li);
+});
+}
+
+function addTodo(e) {
+e.preventDefault();
+const text = todoInput.value.trim();
+if (!text) return;
+todos.push({ id: Date.now(), text, completed: false });
+todoInput.value = '';
+saveTodos();
+renderTodos();
+}
+
+function toggleTodo(id) {
+todos = todos.map(t => t.id === id ? { ...t, completed: !t.completed } : t);
+saveTodos();
+renderTodos();
+}
+
+function deleteTodo(id) {
+todos = todos.filter(t => t.id !== id);
+saveTodos();
+renderTodos();
+}
+
+function editTodo(id) {
+const todo = todos.find(t => t.id === id);
+if (!todo) return;
+const newText = prompt('Edit task:', todo.text);
+if (newText !== null && newText.trim() !== '') {
+todo.text = newText.trim();
+saveTodos();
+renderTodos();
+}
+}
+
+todoForm.addEventListener('submit', addTodo);
+filterBtns.forEach(btn => {
+btn.addEventListener('click', () => {
+filterBtns.forEach(b => b.classList.remove('active'));
+btn.classList.add('active');
+currentTodoFilter = btn.getAttribute('data-filter');
+renderTodos();
+});
+});
+renderTodos();
+
+// App 2: Notes App
+const noteForm = document.getElementById('noteForm');
+const noteTitle = document.getElementById('noteTitle');
+const noteContent = document.getElementById('noteContent');
+const noteTag = document.getElementById('noteTag');
+const noteSearch = document.getElementById('noteSearch');
+const notesGrid = document.getElementById('notesGrid');
+const noteTagFilters = document.querySelectorAll('#noteTagFilters .filter-btn');
+let notes = JSON.parse(localStorage.getItem('hub_notes')) || [
+{ id: 1, title: 'Project Ideas', content: 'Build a fully integrated mini apps hub with all local storage persistence.', tag: 'ideas', date: '2023-10-01' }
+];
+let currentNoteTagFilter = 'all';
+
+function saveNotes() {
+localStorage.setItem('hub_notes', JSON.stringify(notes));
+}
+
+function renderNotes() {
+notesGrid.innerHTML = '';
+const searchVal = noteSearch.value.toLowerCase();
+const filtered = notes.filter(note => {
+const matchesTag = currentNoteTagFilter === 'all' || note.tag === currentNoteTagFilter;
+const matchesSearch = note.title.toLowerCase().includes(searchVal) || note.content.toLowerCase().includes(searchVal);
+return matchesTag && matchesSearch;
+});
+if (filtered.length === 0) {
+notesGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 1rem;">No notes found.</p>';
+return;
+}
+filtered.forEach(note => {
+const card = document.createElement('div');
+card.className = 'note-card';
+card.innerHTML = `
+<div>
+<div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+<h3 style="font-size: 1.1rem; border: none; padding: 0; margin: 0; word-break: break-word;">${escapeHtml(note.title)}</h3>
+<span class="tag-badge tag-${note.tag}">${note.tag}</span>
+</div>
+<div class="note-content">${escapeHtml(note.content)}</div>
+</div>
+<div class="note-footer">
+<span>${note.date}</span>
+<div class="note-actions">
+<button class="action-btn delete" onclick="deleteNote(${note.id})" title="Delete">🗑</button>
+</div>
+</div>
+`;
+notesGrid.appendChild(card);
+});
+}
+
+function addNote(e) {
+e.preventDefault();
+const title = noteTitle.value.trim();
+const content = noteContent.value.trim();
+const tag = noteTag.value;
+if (!title || !content) return;
+const date = new Date().toISOString().split('T')[0];
+notes.unshift({ id: Date.now(), title, content, tag, date });
+noteTitle.value = '';
+noteContent.value = '';
+saveNotes();
+renderNotes();
+}
+
+function deleteNote(id) {
+notes = notes.filter(n => n.id !== id);
+saveNotes();
+renderNotes();
+}
+
+noteForm.addEventListener('submit', addNote);
+noteSearch.addEventListener('input', renderNotes);
+noteTagFilters.forEach(btn => {
+btn.addEventListener('click', () => {
+noteTagFilters.forEach(b => b.classList.remove('active'));
+btn.classList.add('active');
+currentNoteTagFilter = btn.getAttribute('data-tag');
+renderNotes();
+});
+});
+renderNotes();
+
+// App 3: Pomodoro Focus Timer
+const timerDisplay = document.getElementById('timerDisplay');
+const timerStartBtn = document.getElementById('timerStartBtn');
+const timerPauseBtn = document.getElementById('timerPauseBtn');
+const timerResetBtn = document.getElementById('timerResetBtn');
+const modeBtns = document.querySelectorAll('.mode-btn');
+const sessionCounter = document.getElementById('sessionCounter');
+
+let timerInterval = null;
+let currentMode = 'work';
+let timeLeft = 25 * 60;
+let isRunning = false;
+let completedSessions = parseInt(localStorage.getItem('hub_pomodoro_sessions')) || 0;
+
+const modeTimes = {
+work: 25 * 60,
+shortBreak: 5 * 60,
+longBreak: 15 * 60
+};
+
+sessionCounter.textContent = `Completed Sessions: ${completedSessions}`;
+
+function updateTimerDisplay() {
+const minutes = Math.floor(timeLeft / 60);
+const seconds = timeLeft % 60;
+timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+}
+
+function startTimer() {
+if (isRunning) return;
+isRunning = true;
+timerStartBtn.disabled = true;
+timerPauseBtn.disabled = false;
+timerInterval = setInterval(() => {
+if (timeLeft > 0) {
+timeLeft--;
+updateTimerDisplay();
+} else {
+clearInterval(timerInterval);
+isRunning = false;
+timerStartBtn.disabled = false;
+timerPauseBtn.disabled = true;
+if (currentMode === 'work') {
+completedSessions++;
+localStorage.setItem('hub_pomodoro_sessions', completedSessions);
+sessionCounter.textContent = `Completed Sessions: ${completedSessions}`;
+alert('Work session completed! Take a break.');
+} else {
+alert('Break finished! Back to work.');
+}
+}
+}, 1000);
+}
+
+function pauseTimer() {
+clearInterval(timerInterval);
+isRunning = false;
+timerStartBtn.disabled = false;
+timerPauseBtn.disabled = true;
+}
+
+function resetTimer() {
+clearInterval(timerInterval);
+isRunning = false;
+timerStartBtn.disabled = false;
+timerPauseBtn.disabled = true;
+timeLeft = modeTimes[currentMode];
+updateTimerDisplay();
+}
+
+timerStartBtn.addEventListener('click', startTimer);
+timerPauseBtn.addEventListener('click', pauseTimer);
+timerResetBtn.addEventListener('click', resetTimer);
+
+modeBtns.forEach(btn => {
+btn.addEventListener('click', () => {
+if (isRunning) pauseTimer();
+modeBtns.forEach(b => b.classList.remove('active'));
+btn.classList.add('active');
+currentMode = btn.getAttribute('data-mode');
+timeLeft = modeTimes[currentMode];
+updateTimerDisplay();
+});
+});
+updateTimerDisplay();
+
+// App 4: Expense Tracker
+const expenseForm = document.getElementById('expenseForm');
+const expenseTitle = document.getElementById('expenseTitle');
+const expenseAmount = document.getElementById('expenseAmount');
+const expenseCategory = document.getElementById('expenseCategory');
+const expenseDate = document.getElementById('expenseDate');
+const expenseList = document.getElementById('expenseList');
+const totalExpenseAmount = document.getElementById('totalExpenseAmount');
+const foodExpenseAmount = document.getElementById('foodExpenseAmount');
+const billsExpenseAmount = document.getElementById('billsExpenseAmount');
+const entertainmentExpenseAmount = document.getElementById('entertainmentExpenseAmount');
+
+expenseDate.value = new Date().toISOString().split('T')[0];
+let expenses = JSON.parse(localStorage.getItem('hub_expenses')) || [
+{ id: 1, title: 'Groceries', amount: 45.50, category: 'Food', date: '2023-10-01' },
+{ id: 2, title: 'Electricity Bill', amount: 80.00, category: 'Bills', date: '2023-10-02' }
+];
+
+function saveExpenses() {
+localStorage.setItem('hub_expenses', JSON.stringify(expenses));
+}
+
+function renderExpenses() {
+expenseList.innerHTML = '';
+let total = 0;
+let catTotals = { Food: 0, Bills: 0, Entertainment: 0, Other: 0 };
+
+if (expenses.length === 0) {
+expenseList.innerHTML = '<li style="text-align: center; color: var(--text-muted); padding: 1rem;">No expenses recorded.</li>';
+}
+
+expenses.forEach(exp => {
+total += exp.amount;
+if (catTotals[exp.category] !== undefined) {
+catTotals[exp.category] += exp.amount;
+}
+const li = document.createElement('li');
+li.className = 'expense-item';
+li.innerHTML = `
+<div>
+<strong>${escapeHtml(exp.title)}</strong> <span style="font-size: 0.875rem; color: var(--text-muted);">(${exp.category})</span>
+<div style="font-size: 0.75rem; color: var(--text-muted);">${exp.date}</div>
+</div>
+<div style="display: flex; align-items: center; gap: 1rem;">
+<span style="font-weight: bold; color: var(--danger);">-$${exp.amount.toFixed(2)}</span>
+<button class="action-btn delete" onclick="deleteExpense(${exp.id})" title="Delete">🗑</button>
+</div>
+`;
+expenseList.appendChild(li);
+});
+
+totalExpenseAmount.textContent = `$${total.toFixed(2)}`;
+foodExpenseAmount.textContent = `$${catTotals['Food'].toFixed(2)}`;
+billsExpenseAmount.textContent = `$${catTotals['Bills'].toFixed(2)}`;
+entertainmentExpenseAmount.textContent = `$${catTotals['Entertainment'].toFixed(2)}`;
+}
+
+function addExpense(e) {
+e.preventDefault();
+const title = expenseTitle.value.trim();
+const amount = parseFloat(expenseAmount.value);
+const category = expenseCategory.value;
+const date = expenseDate.value;
+if (!title || isNaN(amount) || amount <= 0 || !date) return;
+expenses.unshift({ id: Date.now(), title, amount, category, date });
+expenseTitle.value = '';
+expenseAmount.value = '';
+expenseDate.value = new Date().toISOString().split('T')[0];
+saveExpenses();
+renderExpenses();
+}
+
+function deleteExpense(id) {
+expenses = expenses.filter(e => e.id !== id);
+saveExpenses();
+renderExpenses();
+}
+
+expenseForm.addEventListener('submit', addExpense);
+renderExpenses();
+
+// App 5: Habit Tracker
+const habitForm = document.getElementById('habitForm');
+const habitInput = document.getElementById('habitInput');
+const habitList = document.getElementById('habitList');
+
+let habits = JSON.parse(localStorage.getItem('hub_habits')) || [
+{ id: 1, name: 'Drink Water', days: [false, true, false, true, false, true, false] },
+{ id: 2, name: 'Exercise', days: [true, false, true, false, true, false, false] }
+];
+
+const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+function saveHabits() {
+localStorage.setItem('hub_habits', JSON.stringify(habits));
+}
+
+function renderHabits() {
+habitList.innerHTML = '';
+if (habits.length === 0) {
+habitList.innerHTML = '<li style="text-align: center; color: var(--text-muted); padding: 1rem;">No habits tracked yet.</li>';
+return;
+}
+habits.forEach(habit => {
+const li = document.createElement('li');
+li.className = 'habit-item';
+let daysHtml = '';
+for (let i = 0; i < 7; i++) {
+daysHtml += `
+<div class="habit-day-checkbox">
+<input type="checkbox" ${habit.days[i] ? 'checked' : ''} onchange="toggleHabitDay(${habit.id}, ${i})">
+<span>${dayNames[i]}</span>
+</div>
+`;
+}
+li.innerHTML = `
+<div><strong>${escapeHtml(habit.name)}</strong></div>
+<div style="display: flex; align-items: center; gap: 1rem;">
+<div class="habit-days">${daysHtml}</div>
+<button class="action-btn delete" onclick="deleteHabit(${habit.id})" title="Delete">🗑</button>
+</div>
+`;
+habitList.appendChild(li);
+});
+}
+
+function addHabit(e) {
+e.preventDefault();
+const name = habitInput.value.trim();
+if (!name) return;
+habits.push({ id: Date.now(), name, days: [false, false, false, false, false, false, false] });
+habitInput.value = '';
+saveHabits();
+renderHabits();
+}
+
+function toggleHabitDay(habitId, dayIndex) {
+const habit = habits.find(h => h.id === habitId);
+if (habit) {
+habit.days[dayIndex] = !habit.days[dayIndex];
+saveHabits();
+}
+}
+
+function deleteHabit(id) {
+habits = habits.filter(h => h.id !== id);
+saveHabits();
+renderHabits();
+}
+
+habitForm.addEventListener('submit', addHabit);
+renderHabits();
+
+// App 6: Memory Card Matching Game
+const memoryGrid = document.getElementById('memoryGrid');
+const memoryMoves = document.getElementById('memoryMoves');
+const memoryMatches = document.getElementById('memoryMatches');
+const memoryRestartBtn = document.getElementById('memoryRestartBtn');
+
+const emojis = ['🍎', '🍌', '🍇', '🍉', '🍓', '🍒'];
+let memoryCards = [];
+let flippedCards = [];
+let matchedPairs = 0;
+let movesCount = 0;
+let isLockBoard = false;
+
+function initMemoryGame() {
+memoryGrid.innerHTML = '';
+flippedCards = [];
+matchedPairs = 0;
+movesCount = 0;
+isLockBoard = false;
+memoryMoves.textContent = movesCount;
+memoryMatches.textContent = matchedPairs;
+
+const deck = [...emojis, ...emojis].sort(() => Math.random() - 0.5);
+memoryCards = deck.map((emoji, index) => ({ id: index, emoji, isFlipped: false, isMatched: false }));
+
+memoryCards.forEach(card => {
+const cardEl = document.createElement('div');
+cardEl.className = 'memory-card';
+cardEl.dataset.id = card.id;
+cardEl.textContent = '?';
+cardEl.addEventListener('click', () => flipMemoryCard(card.id, cardEl));
+memoryGrid.appendChild(cardEl);
+});
+}
+
+function flipMemoryCard(id, cardEl) {
+if (isLockBoard) return;
+if (cardEl.classList.contains('flipped') || cardEl.classList.contains('matched')) return;
+
+const card = memoryCards.find(c => c.id === id);
+card.isFlipped = true;
+cardEl.textContent = card.emoji;
+cardEl.classList.add('flipped');
+flippedCards.push({ id, emoji: card.emoji, element: cardEl });
+
+if (flippedCards.length === 2) {
+movesCount++;
+memoryMoves.textContent = movesCount;
+checkForMatch();
+}
+}
+
+function checkForMatch() {
+const [card1, card2] = flippedCards;
+if (card1.emoji === card2.emoji) {
+card1.element.classList.add('matched');
+card2.element.classList.add('matched');
+matchedPairs++;
+memoryMatches.textContent = matchedPairs;
+flippedCards = [];
+if (matchedPairs === emojis.length) {
+setTimeout(() => alert(`You won in ${movesCount} moves!`), 300);
+}
+} else {
+isLockBoard = true;
+setTimeout(() => {
+const c1 = memoryCards.find(c => c.id === card1.id);
+const c2 = memoryCards.find(c => c.id === card2.id);
+c1.isFlipped = false;
+c2.isFlipped = false;
+card1.element.textContent = '?';
+card2.element.textContent = '?';
+card1.element.classList.remove('flipped');
+card2.element.classList.remove('flipped');
+flippedCards = [];
+isLockBoard = false;
+}, 1000);
+}
+}
+
+memoryRestartBtn.addEventListener('click', initMemoryGame);
+initMemoryGame();
+
+// App 7: Calculator
+const calcDisplay = document.getElementById('calcDisplay');
+const calcHistory = document.getElementById('calcHistory');
+const calcBtns = document.querySelectorAll('.calc-btn');
+
+let currentInput = '0';
+let calculationHistory = JSON.parse(localStorage.getItem('hub_calc_history')) || [];
+
+function renderCalcHistory() {
+calcHistory.innerHTML = calculationHistory.slice(-5).reverse().map(h => `<div>${h}</div>`).join('');
+}
+
+function handleCalcInput(value) {
+if (currentInput === '0' && value !== '.') {
+currentInput = value;
+} else {
+currentInput += value;
+}
+calcDisplay.textContent = currentInput;
+}
+
+calcBtns.forEach(btn => {
+btn.addEventListener('click', () => {
+const val = btn.getAttribute('data-value');
+const action = btn.getAttribute('data-action');
+
+if (val !== null) {
+handleCalcInput(val);
+} else if (action === 'clear') {
+currentInput = '0';
+calcDisplay.textContent = currentInput;
+} else if (action === 'del') {
+currentInput = currentInput.slice(0, -1);
+if (currentInput === '') currentInput = '0';
+calcDisplay.textContent = currentInput;
+} else if (action === 'calculate') {
+try {
+let sanitized = currentInput.replace(/÷/g, '/').replace(/×/g, '*');
+let result = eval(sanitized);
+if (isNaN(result) || !isFinite(result)) throw new Error();
+let historyItem = `${currentInput} = ${result}`;
+calculationHistory.push(historyItem);
+localStorage.setItem('hub_calc_history', JSON.stringify(calculationHistory));
+renderCalcHistory();
+currentInput = String(result);
+calcDisplay.textContent = currentInput;
+} catch (e) {
+calcDisplay.textContent = 'Error';
+currentInput = '0';
+}
+}
+});
+});
+renderCalcHistory();
+
+// App 8: Quiz Game
+const quizStartScreen = document.getElementById('quizStartScreen');
+const quizGameScreen = document.getElementById('quizGameScreen');
+const quizEndScreen = document.getElementById('quizEndScreen');
+const quizStartBtn = document.getElementById('quizStartBtn');
+const quizRestartBtn = document.getElementById('quizRestartBtn');
+const quizQuestionCount = document.getElementById('quizQuestionCount');
+const quizTimer = document.getElementById('quizTimer');
+const quizQuestionText = document.getElementById('quizQuestionText');
+const quizOptionsList = document.getElementById('quizOptionsList');
+const quizFinalScore = document.getElementById('quizFinalScore');
+
+const quizQuestions = [
+{ question: 'What is the capital of France?', options: ['Berlin', 'Madrid', 'Paris', 'Rome'], answer: 2 },
+{ question: 'Which planet is known as the Red Planet?', options: ['Venus', 'Mars', 'Jupiter', 'Saturn'], answer: 1 },
+{ question: 'What is 5 + 3 * 2?', options: ['16', '11', '13', '10'], answer: 1 },
+{ question: 'Which language runs in a web browser?', options: ['Java', 'C++', 'Python', 'JavaScript'], answer: 3 },
+{ question: 'What is the largest ocean on Earth?', options: ['Atlantic Ocean', 'Indian Ocean', 'Pacific Ocean', 'Arctic Ocean'], answer: 2 }
+];
+
+let currentQuizIndex = 0;
+let quizScore = 0;
+let quizTimeLeft = 15;
+let quizInterval = null;
+
+function startQuiz() {
+quizStartScreen.style.display = 'none';
+quizEndScreen.style.display = 'none';
+quizGameScreen.style.display = 'block';
+currentQuizIndex = 0;
+quizScore = 0;
+loadQuizQuestion();
+}
+
+function loadQuizQuestion() {
+if (currentQuizIndex >= quizQuestions.length) {
+endQuiz();
+return;
+}
+clearInterval(quizInterval);
+quizTimeLeft = 15;
+quizTimer.textContent = `Time: ${quizTimeLeft}s`;
+
+const q = quizQuestions[currentQuizIndex];
+quizQuestionCount.textContent = `Question ${currentQuizIndex + 1} of ${quizQuestions.length}`;
+quizQuestionText.textContent = q.question;
+quizOptionsList.innerHTML = '';
+
+q.options.forEach((opt, idx) => {
+const btn = document.createElement('button');
+btn.className = 'quiz-option-btn';
+btn.textContent = opt;
+btn.addEventListener('click', () => selectQuizOption(idx, q.answer));
+quizOptionsList.appendChild(btn);
+});
+
+quizInterval = setInterval(() => {
+quizTimeLeft--;
+quizTimer.textContent = `Time: ${quizTimeLeft}s`;
+if (quizTimeLeft <= 0) {
+clearInterval(quizInterval);
+highlightCorrectAnswer(q.answer);
+setTimeout(nextQuizQuestion, 1200);
+}
+}, 1000);
+}
+
+function selectQuizOption(selectedIndex, correctIndex) {
+clearInterval(quizInterval);
+const buttons = quizOptionsList.querySelectorAll('.quiz-option-btn');
+buttons.forEach((btn, idx) => {
+btn.disabled = true;
+if (idx === correctIndex) btn.classList.add('correct');
+if (idx === selectedIndex && idx !== correctIndex) btn.classList.add('incorrect');
+});
+if (selectedIndex === correctIndex) {
+quizScore++;
+}
+setTimeout(nextQuizQuestion, 1200);
+}
+
+function highlightCorrectAnswer(correctIndex) {
+const buttons = quizOptionsList.querySelectorAll('.quiz-option-btn');
+buttons.forEach((btn, idx) => {
+btn.disabled = true;
+if (idx === correctIndex) btn.classList.add('correct');
+});
+}
+
+function nextQuizQuestion() {
+currentQuizIndex++;
+loadQuizQuestion();
+}
+
+function endQuiz() {
+quizGameScreen.style.display = 'none';
+quizEndScreen.style.display = 'block';
+quizFinalScore.textContent = `Your Score: ${quizScore} / ${quizQuestions.length}`;
+}
+
+quizStartBtn.addEventListener('click', startQuiz);
+quizRestartBtn.addEventListener('click', startQuiz);
+
+// App 9: Snake Game
+const snakeCanvas = document.getElementById('snakeCanvas');
+const ctx = snakeCanvas.getContext('2d');
+const snakeScoreEl = document.getElementById('snakeScore');
+const snakeHighScoreEl = document.getElementById('snakeHighScore');
+const snakeStartBtn = document.getElementById('snakeStartBtn');
+const snakeResetBtn = document.getElementById('snakeResetBtn');
+
+const gridSize = 20;
+const tileCount = snakeCanvas.width / gridSize;
+let snake = [{ x: 10, y: 10 }];
+let food = { x: 5, y: 5 };
+let dx = 0;
+let dy = 0;
+let score = 0;
+let highScore = parseInt(localStorage.getItem('hub_snake_highscore')) || 0;
+let snakeInterval = null;
+let isSnakeRunning = false;
+
+snakeHighScoreEl.textContent = highScore;
+
+function resetSnakeGame() {
+clearInterval(snakeInterval);
+isSnakeRunning = false;
+snake = [{ x: 10, y: 10 }];
+dx = 0;
+dy = 0;
+score = 0;
+snakeScoreEl.textContent = score;
+spawnFood();
+drawSnakeGame();
+}
+
+function spawnFood() {
+food.x = Math.floor(Math.random() * tileCount);
+food.y = Math.floor(Math.random() * tileCount);
+}
+
+function startSnakeGame() {
+if (isSnakeRunning) {
+clearInterval(snakeInterval);
+isSnakeRunning = false;
+return;
+}
+if (dx === 0 && dy === 0) {
+dx = 1;
+dy = 0;
+}
+isSnakeRunning = true;
+snakeInterval = setInterval(updateSnakeGame, 100);
+}
+
+function updateSnakeGame() {
+const head = { x: snake[0].x + dx, y: snake[0].y + dy };
+
+if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount || snake.some(s => s.x === head.x && s.y === head.y)) {
+clearInterval(snakeInterval);
+isSnakeRunning = false;
+alert('Game Over!');
+return;
+}
+
+snake.unshift(head);
+
+if (head.x === food.x && head.y === food.y) {
+score += 10;
+snakeScoreEl.textContent = score;
+if (score > highScore) {
+highScore = score;
+snakeHighScoreEl.textContent = highScore;
+localStorage.setItem('hub_snake_highscore', highScore);
+}
+spawnFood();
+} else {
+snake.pop();
+}
+
+drawSnakeGame();
+}
+
+function drawSnakeGame() {
+ctx.fillStyle = '#111';
+ctx.fillRect(0, 0, snakeCanvas.width, snakeCanvas.height);
+
+ctx.fillStyle = '#ef4444';
+ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
+
+ctx.fillStyle = '#10b981';
+snake.forEach((part, index) => {
+ctx.fillRect(part.x * gridSize, part.y * gridSize, gridSize - 2, gridSize - 2);
+});
+}
+
+window.addEventListener('keydown', e => {
+if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+e.preventDefault();
+if (!isSnakeRunning && (dx === 0 && dy === 0)) {
+startSnakeGame();
+}
+}
+if (e.key === 'ArrowUp' && dy === 0) { dx = 0; dy = -1; }
+if (e.key === 'ArrowDown' && dy === 0) { dx = 0; dy = 1; }
+if (e.key === 'ArrowLeft' && dx === 0) { dx = -1; dy = 0; }
+if (e.key === 'ArrowRight' && dx === 0) { dx = 1; dy = 0; }
+});
+
+snakeStartBtn.addEventListener('click', startSnakeGame);
+snakeResetBtn.addEventListener('click', resetSnakeGame);
+drawSnakeGame();
+
+// App 10: Flashcards
+const flashcardElement = document.getElementById('flashcardElement');
+const flashcardFrontText = document.getElementById('flashcardFrontText');
+const flashcardBackText = document.getElementById('flashcardBackText');
+const flashcardCounter = document.getElementById('flashcardCounter');
+const flashcardPrevBtn = document.getElementById('flashcardPrevBtn');
+const flashcardNextBtn = document.getElementById('flashcardNextBtn');
+const flashcardShuffleBtn = document.getElementById('flashcardShuffleBtn');
+const flashcardForm = document.getElementById('flashcardForm');
+const flashcardFrontInput = document.getElementById('flashcardFrontInput');
+const flashcardBackInput = document.getElementById('flashcardBackInput');
+
+let flashcards = JSON.parse(localStorage.getItem('hub_flashcards')) || [
+{ front: 'What is HTML?', back: 'HyperText Markup Language' },
+{ front: 'What is CSS?', back: 'Cascading Style Sheets' },
+{ front: 'What is JavaScript?', back: 'A programming language for the web' },
+{ front: 'What is DOM?', back: 'Document Object Model' }
+];
+
+let currentCardIndex = 0;
+let isCardFlipped = false;
+
+function saveFlashcards() {
+localStorage.setItem('hub_flashcards', JSON.stringify(flashcards));
+}
+
+function renderFlashcard() {
+if (flashcards.length === 0) {
+flashcardFrontText.textContent = 'No flashcards available.';
+flashcardBackText.textContent = 'Add some below!';
+flashcardCounter.textContent = 'Card 0 of 0';
+return;
+}
+const card = flashcards[currentCardIndex];
+flashcardFrontText.textContent = card.front;
+flashcardBackText.textContent = card.back;
+flashcardCounter.textContent = `Card ${currentCardIndex + 1} of ${flashcards.length}`;
+isCardFlipped = false;
+flashcardElement.classList.remove('flipped');
+}
+
+flashcardElement.addEventListener('click', () => {
+isCardFlipped = !isCardFlipped;
+flashcardElement.classList.toggle('flipped', isCardFlipped);
+});
+
+flashcardPrevBtn.addEventListener('click', () => {
+if (flashcards.length === 0) return;
+currentCardIndex = (currentCardIndex - 1 + flashcards.length) % flashcards.length;
+renderFlashcard();
+});
+
+flashcardNextBtn.addEventListener('click', () => {
+if (flashcards.length === 0) return;
+currentCardIndex = (currentCardIndex + 1) % flashcards.length;
+renderFlashcard();
+});
+
+flashcardShuffleBtn.addEventListener('click', () => {
+flashcards.sort(() => Math.random() - 0.5);
+currentCardIndex = 0;
+renderFlashcard();
+});
+
+flashcardForm.addEventListener('submit', e => {
+e.preventDefault();
+const front = flashcardFrontInput.value.trim();
+const back = flashcardBackInput.value.trim();
+if (!front || !back) return;
+flashcards.push({ front, back });
+flashcardFrontInput.value = '';
+flashcardBackInput.value = '';
+saveFlashcards();
+renderFlashcard();
+});
+
+renderFlashcard();
+
+// Helper Function for HTML Escaping
+function escapeHtml(str) {
+return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+</script>
+</body>
+</html>
