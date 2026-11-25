@@ -1,0 +1,1899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mini Apps Hub 2</title>
+<style>
+:root {
+--bg-color: #f4f6f9;
+--card-bg: #ffffff;
+--text-color: #333333;
+--text-muted: #666666;
+--primary: #4f46e5;
+--primary-hover: #4338ca;
+--border-color: #e5e7eb;
+--accent: #10b981;
+--danger: #ef4444;
+--warning: #f59e0b;
+--header-bg: #ffffff;
+}
+[data-theme="dark"] {
+--bg-color: #0f172a;
+--card-bg: #1e293b;
+--text-color: #f1f5f9;
+--text-muted: #94a3b8;
+--primary: #6366f1;
+--primary-hover: #4f46e5;
+--border-color: #334155;
+--accent: #34d399;
+--danger: #f87171;
+--warning: #fbbf24;
+--header-bg: #1e293b;
+}
+* {
+box-sizing: border-box;
+margin: 0;
+padding: 0;
+font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+body {
+background-color: var(--bg-color);
+color: var(--text-color);
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+transition: background-color 0.3s, color 0.3s;
+}
+header {
+position: sticky;
+top: 0;
+z-index: 1000;
+background-color: var(--header-bg);
+border-bottom: 1px solid var(--border-color);
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 1rem 2rem;
+box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.logo {
+font-size: 1.25rem;
+font-weight: 700;
+color: var(--primary);
+cursor: pointer;
+display: flex;
+align-items: center;
+gap: 0.5rem;
+}
+.header-controls {
+display: flex;
+gap: 1rem;
+align-items: center;
+}
+.theme-toggle, .home-btn {
+background: none;
+border: 1px solid var(--border-color);
+color: var(--text-color);
+padding: 0.5rem 1rem;
+border-radius: 0.375rem;
+cursor: pointer;
+font-weight: 500;
+transition: background 0.2s;
+}
+.theme-toggle:hover, .home-btn:hover {
+background-color: var(--border-color);
+}
+main {
+flex: 1;
+padding: 2rem;
+max-width: 1400px;
+width: 100%;
+margin: 0 auto;
+}
+.dashboard-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+gap: 1.5rem;
+}
+.app-card {
+background-color: var(--card-bg);
+border: 1px solid var(--border-color);
+border-radius: 0.75rem;
+padding: 1.5rem;
+cursor: pointer;
+transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+display: flex;
+flex-direction: column;
+gap: 0.75rem;
+}
+.app-card:hover {
+transform: translateY(-4px);
+box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+border-color: var(--primary);
+}
+.app-card h3 {
+font-size: 1.25rem;
+color: var(--primary);
+}
+.app-card p {
+color: var(--text-muted);
+font-size: 0.9rem;
+line-height: 1.4;
+}
+.app-view {
+display: none;
+background-color: var(--card-bg);
+border: 1px solid var(--border-color);
+border-radius: 0.75rem;
+padding: 2rem;
+box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+}
+.app-view.active {
+display: block;
+}
+.app-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 1.5rem;
+border-bottom: 1px solid var(--border-color);
+padding-bottom: 1rem;
+}
+.app-header h2 {
+font-size: 1.5rem;
+color: var(--primary);
+}
+.back-btn {
+background-color: transparent;
+border: 1px solid var(--border-color);
+color: var(--text-color);
+padding: 0.5rem 1rem;
+border-radius: 0.375rem;
+cursor: pointer;
+font-weight: 500;
+}
+.back-btn:hover {
+background-color: var(--border-color);
+}
+input, select, textarea, button {
+font: inherit;
+color: inherit;
+background-color: var(--bg-color);
+border: 1px solid var(--border-color);
+border-radius: 0.375rem;
+padding: 0.5rem 0.75rem;
+}
+input:focus, select:focus, textarea:focus {
+outline: 2px solid var(--primary);
+border-color: transparent;
+}
+button.primary-btn {
+background-color: var(--primary);
+color: white;
+border: none;
+font-weight: 600;
+cursor: pointer;
+transition: background-color 0.2s;
+}
+button.primary-btn:hover {
+background-color: var(--primary-hover);
+}
+button.danger-btn {
+background-color: var(--danger);
+color: white;
+border: none;
+font-weight: 600;
+cursor: pointer;
+}
+.todo-input-row, .note-input-area, .expense-form, .budget-form, .flashcard-form {
+display: flex;
+gap: 0.5rem;
+margin-bottom: 1rem;
+flex-wrap: wrap;
+}
+.todo-item, .note-item, .habit-item, .expense-item, .budget-item, .flashcard-item {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 0.75rem;
+border: 1px solid var(--border-color);
+border-radius: 0.375rem;
+margin-bottom: 0.5rem;
+background-color: var(--bg-color);
+}
+.todo-item.completed span {
+text-decoration: line-through;
+color: var(--text-muted);
+}
+.flex-col {
+display: flex;
+flex-direction: column;
+gap: 1rem;
+}
+.flex-row {
+display: flex;
+gap: 1rem;
+align-items: center;
+}
+.grid-2 {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 1.5rem;
+}
+@media(max-width: 768px) {
+.grid-2 {
+grid-template-columns: 1fr;
+}
+header {
+padding: 1rem;
+}
+main {
+padding: 1rem;
+}
+}
+.pomodoro-display {
+font-size: 4rem;
+font-weight: 700;
+text-align: center;
+margin: 1.5rem 0;
+color: var(--primary);
+}
+.pomodoro-controls {
+display: flex;
+justify-content: center;
+gap: 1rem;
+}
+.chart-container {
+width: 100%;
+max-width: 600px;
+height: 300px;
+margin: 1rem auto;
+background: var(--bg-color);
+border: 1px solid var(--border-color);
+border-radius: 0.375rem;
+position: relative;
+}
+canvas {
+width: 100%;
+height: 100%;
+display: block;
+}
+.habit-grid {
+display: flex;
+gap: 0.5rem;
+align-items: center;
+}
+.habit-day {
+width: 24px;
+height: 24px;
+border-radius: 4px;
+border: 1px solid var(--border-color);
+background-color: var(--bg-color);
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 0.75rem;
+}
+.habit-day.checked {
+background-color: var(--accent);
+border-color: var(--accent);
+color: white;
+}
+.calc-grid {
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+gap: 0.5rem;
+max-width: 300px;
+margin: 0 auto;
+}
+.calc-display {
+grid-column: span 4;
+font-size: 1.5rem;
+text-align: right;
+padding: 0.75rem;
+background: var(--bg-color);
+border: 1px solid var(--border-color);
+border-radius: 0.375rem;
+margin-bottom: 0.5rem;
+overflow-x: auto;
+}
+.calc-btn {
+padding: 1rem;
+font-size: 1.2rem;
+cursor: pointer;
+background: var(--card-bg);
+border: 1px solid var(--border-color);
+border-radius: 0.375rem;
+}
+.calc-btn:hover {
+background: var(--border-color);
+}
+.memory-grid {
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+gap: 1rem;
+max-width: 400px;
+margin: 0 auto;
+}
+.memory-card {
+height: 80px;
+background-color: var(--primary);
+border-radius: 0.5rem;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 2rem;
+cursor: pointer;
+user-select: none;
+color: transparent;
+transition: transform 0.3s;
+}
+.memory-card.flipped {
+background-color: var(--card-bg);
+border: 2px solid var(--primary);
+color: var(--text-color);
+}
+.ttt-grid {
+display: grid;
+grid-template-columns: repeat(3, 100px);
+grid-template-rows: repeat(3, 100px);
+gap: 5px;
+justify-content: center;
+margin: 1.5rem 0;
+}
+.ttt-cell {
+background-color: var(--bg-color);
+border: 2px solid var(--border-color);
+border-radius: 0.5rem;
+font-size: 2.5rem;
+font-weight: bold;
+display: flex;
+align-items: center;
+justify-content: center;
+cursor: pointer;
+}
+.ttt-cell:hover {
+background-color: var(--border-color);
+}
+.flashcard-container {
+perspective: 1000px;
+width: 100%;
+max-width: 400px;
+height: 250px;
+margin: 1.5rem auto;
+cursor: pointer;
+}
+.flashcard-inner {
+position: relative;
+width: 100%;
+height: 100%;
+text-align: center;
+transition: transform 0.6s;
+transform-style: preserve-3d;
+border-radius: 0.75rem;
+border: 1px solid var(--border-color);
+box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+.flashcard-container.flipped .flashcard-inner {
+transform: rotateY(180deg);
+}
+.flashcard-front, .flashcard-back {
+position: absolute;
+width: 100%;
+height: 100%;
+backface-visibility: hidden;
+display: flex;
+align-items: center;
+justify-content: center;
+padding: 2rem;
+background-color: var(--card-bg);
+border-radius: 0.75rem;
+font-size: 1.25rem;
+}
+.flashcard-back {
+transform: rotateY(180deg);
+background-color: var(--bg-color);
+color: var(--primary);
+}
+.typing-box {
+font-size: 1.25rem;
+line-height: 1.8;
+padding: 1rem;
+border: 1px solid var(--border-color);
+border-radius: 0.375rem;
+margin-bottom: 1rem;
+background-color: var(--bg-color);
+user-select: none;
+}
+.typing-char {
+color: var(--text-muted);
+}
+.typing-char.correct {
+color: var(--accent);
+}
+.typing-char.incorrect {
+color: var(--danger);
+text-decoration: underline;
+}
+.typing-char.current {
+border-left: 2px solid var(--primary);
+}
+#snakeCanvas {
+background-color: #000;
+display: block;
+margin: 0 auto;
+border: 2px solid var(--border-color);
+border-radius: 0.375rem;
+}
+.shortcuts-hint {
+font-size: 0.8rem;
+color: var(--text-muted);
+margin-top: 2rem;
+text-align: center;
+}
+</style>
+</head>
+<body data-theme="light">
+<header>
+<div class="logo" onclick="showDashboard()">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+Mini Apps Hub 2
+</div>
+<div class="header-controls">
+<button class="home-btn" onclick="showDashboard()">Dashboard</button>
+<button class="theme-toggle" onclick="toggleTheme()">Toggle Theme</button>
+</div>
+</header>
+<main>
+<div id="dashboard" class="dashboard-grid">
+<div class="app-card" onclick="openApp('todo')">
+<h3>To-Do List</h3>
+<p>Manage tasks with priorities, due dates, and completion status.</p>
+</div>
+<div class="app-card" onclick="openApp('notes')">
+<h3>Notes App</h3>
+<p>Quickly jot down thoughts, search, and organize with color tags.</p>
+</div>
+<div class="app-card" onclick="openApp('pomodoro')">
+<h3>Pomodoro Timer</h3>
+<p>Boost productivity with timed focus sessions and daily statistics.</p>
+</div>
+<div class="app-card" onclick="openApp('expense')">
+<h3>Expense Tracker</h3>
+<p>Log expenses, view category totals, and analyze with a visual chart.</p>
+</div>
+<div class="app-card" onclick="openApp('habits')">
+<h3>Habit Tracker</h3>
+<p>Build better routines and maintain weekly streaks for daily habits.</p>
+</div>
+<div class="app-card" onclick="openApp('budget')">
+<h3>Budget Planner</h3>
+<p>Set income and category budgets to monitor financial health.</p>
+</div>
+<div class="app-card" onclick="openApp('converter')">
+<h3>Unit Converter</h3>
+<p>Convert units of length, weight, temperature, and data instantly.</p>
+</div>
+<div class="app-card" onclick="openApp('calculator')">
+<h3>Calculator</h3>
+<p>Perform basic and advanced math operations with a full history log.</p>
+</div>
+<div class="app-card" onclick="openApp('stopwatch')">
+<h3>Stopwatch & Timer</h3>
+<p>Track elapsed time with lap records or set custom countdowns.</p>
+</div>
+<div class="app-card" onclick="openApp('password')">
+<h3>Password Generator</h3>
+<p>Create secure, customizable passwords with special characters.</p>
+</div>
+<div class="app-card" onclick="openApp('quiz')">
+<h3>Quiz Game</h3>
+<p>Test your general knowledge with a timed multiple-choice quiz.</p>
+</div>
+<div class="app-card" onclick="openApp('snake')">
+<h3>Snake Game</h3>
+<p>Control the classic snake on a canvas, eat food, and beat your high score.</p>
+</div>
+<div class="app-card" onclick="openApp('memory')">
+<h3>Memory Card Game</h3>
+<p>Flip cards to find matching pairs in the fewest moves possible.</p>
+</div>
+<div class="app-card" onclick="openApp('tictactoe')">
+<h3>Tic-Tac-Toe</h3>
+<p>Play the classic X and O game against a responsive computer opponent.</p>
+</div>
+<div class="app-card" onclick="openApp('flashcards')">
+<h3>Flashcards</h3>
+<p>Study terms and definitions with interactive 3D card flips and shuffling.</p>
+</div>
+<div class="app-card" onclick="openApp('typing')">
+<h3>Typing Speed Test</h3>
+<p>Measure your typing speed (WPM) and accuracy with live tests.</p>
+</div>
+</div>
+<div class="shortcuts-hint">Tip: Press Alt + 1-9 to quick-switch apps, or Alt + H to return home.</div>
+
+<div id="app-todo" class="app-view">
+<div class="app-header">
+<h2>To-Do List</h2>
+<button class="back-btn" onclick="showDashboard()">Back</button>
+</div>
+<div class="todo-input-row">
+<input type="text" id="todoInput" placeholder="Add a new task..." style="flex:1;">
+<select id="todoPriority">
+<option value="low">Low Priority</option>
+<option value="medium" selected>Medium Priority</option>
+<option value="high">High Priority</option>
+</select>
+<input type="date" id="todoDate">
+<button class="primary-btn" onclick="addTodo()">Add Task</button>
+</div>
+<div class="flex-row" style="margin-bottom: 1rem;">
+<select id="todoFilter" onchange="renderTodos()">
+<option value="all">All Tasks</option>
+<option value="active">Active</option>
+<option value="completed">Completed</option>
+</select>
+<button onclick="clearCompletedTodos()">Clear Completed</button>
+</div>
+<div id="todoList"></div>
+</div>
+
+<div id="app-notes" class="app-view">
+<div class="app-header">
+<h2>Notes App</h2>
+<button class="back-btn" onclick="showDashboard()">Back</button>
+</div>
+<div class="note-input-area flex-col">
+<input type="text" id="noteTitle" placeholder="Note Title...">
+<textarea id="noteContent" placeholder="Write your note here..." rows="4"></textarea>
+<div class="flex-row">
+<select id="noteColor">
+<option value="#ffffff">Default</option>
+<option value="#fef08a">Yellow</option>
+<option value="#bbf7d0">Green</option>
+<option value="#bae6fd">Blue</option>
+<option value="#fecdd3">Pink</option>
+</select>
+<button class="primary-btn" onclick="addNote()">Save Note</button>
+</div>
+</div>
+<input type="text" id="noteSearch" placeholder="Search notes..." oninput="renderNotes()" style="width:100%; margin-bottom:1rem;">
+<div id="notesList" class="grid-2"></div>
+</div>
+
+<div id="app-pomodoro" class="app-view">
+<div class="app-header">
+<h2>Pomodoro Timer</h2>
+<button class="back-btn" onclick="showDashboard()">Back</button>
+</div>
+<div class="flex-row" style="justify-content: center; gap: 1rem;">
+<button onclick="setPomodoroMode('work')" class="primary-btn">Work (25m)</button>
+<button onclick="setPomodoroMode('shortBreak')">Short Break (5m)</button>
+<button onclick="setPomodoroMode('longBreak')">Long Break (15m)</button>
+</div>
+<div class="pomodoro-display" id="pomodoroDisplay">25:00</div>
+<div class="pomodoro-controls">
+<button class="primary-btn" id="pomodoroStartBtn" onclick="togglePomodoro()">Start</button>
+<button onclick="resetPomodoro()">Reset</button>
+</div>
+<div style="margin-top: 2rem; text-align: center;">
+<h3>Daily Statistics</h3>
+<p id="pomodoroStats">Completed Sessions Today: 0</p>
+</div>
+</div>
+
+<div id="app-expense" class="app-view">
+<div class="app-header">
+<h2>Expense Tracker</h2>
+<button class="back-btn" onclick="showDashboard()">Back</button>
+</div>
+<div class="expense-form flex-col">
+<div class="grid-2">
+<input type="text" id="expenseDesc" placeholder="Description">
+<input type="number" id="expenseAmount" placeholder="Amount ($)">
+</div>
+<div class="grid-2">
+<select id="expenseCategory">
+<option value="Food">Food</option>
+<option value="Transport">Transport</option>
+<option value="Utilities">Utilities</option>
+<option value="Entertainment">Entertainment</option>
+<option value="Other">Other</option>
+</select>
+<button class="primary-btn" onclick="addExpense()">Add Expense</button>
+</div>
+</div>
+<div class="chart-container">
+<canvas id="expenseCanvas"></canvas>
+</div>
+<div style="margin-top: 1rem;">
+<h3>Expenses List</h3>
+<div id="expenseList" style="margin-top: 0.5rem;"></div>
+</div>
+</div>
+
+<div id="app-habits" class="app-view">
+<div class="app-header">
+<h2>Habit Tracker</h2>
+<button class="back-btn" onclick="showDashboard()">Back</button>
+</div>
+<div class="todo-input-row">
+<input type="text" id="habitNameInput" placeholder="New habit name..." style="flex:1;">
+<button class="primary-btn" onclick="addHabit()">Add Habit</button>
+</div>
+<div id="habitList"></div>
+</div>
+
+<div id="app-budget" class="app-view">
+<div class="app-header">
+<h2>Budget Planner</h2>
+<button class="back-btn" onclick="showDashboard()">Back</button>
+</div>
+<div class="budget-form flex-col">
+<div class="grid-2">
+<div>
+<label>Monthly Income: </label>
+<input type="number" id="budgetIncome" onchange="saveBudgetIncome()" placeholder="Enter income">
+</div>
+<div>
+<label>Category Budget: </label>
+<select id="budgetCategory">
+<option value="Food">Food</option>
+<option value="Transport">Transport</option>
+<option value="Utilities">Utilities</option>
+<option value="Entertainment">Entertainment</option>
+<option value="Other">Other</option>
+</select>
+</div>
+</div>
+<div class="grid-2">
+<input type="number" id="budgetLimit" placeholder="Set limit ($)">
+<button class="primary-btn" onclick="setCategoryBudget()">Set Budget</button>
+</div>
+</div>
+<div id="budgetOverview" style="margin-top: 1.5rem;"></div>
+</div>
+
+<div id="app-converter" class="app-view">
+<div class="app-header">
+<h2>Unit Converter</h2>
+<button class="back-btn" onclick="showDashboard()">Back</button>
+</div>
+<div class="flex-col">
+<select id="convType" onchange="updateConverterUnits()">
+<option value="length">Length</option>
+<option value="weight">Weight</option>
+<option value="temperature">Temperature</option>
+<option value="data">Data Storage</option>
+</select>
+<div class="grid-2">
+<div class="flex-col">
+<input type="number" id="convValue1" placeholder="Value" oninput="convertUnits(1)">
+<select id="convUnit1" onchange="convertUnits(1)"></select>
+</div>
+<div class="flex-col">
+<input type="number" id="convValue2" placeholder="Value" oninput="convertUnits(2)">
+<select id="convUnit2" onchange="convertUnits(2)"></select>
+</div>
+</div>
+</div>
+</div>
+
+<div id="app-calculator" class="app-view">
+<div class="app-header">
+<h2>Calculator</h2>
+<button class="back-btn" onclick="showDashboard()">Back</button>
+</div>
+<div class="grid-2">
+<div>
+<div class="calc-grid">
+<div class="calc-display" id="calcDisplay">0</div>
+<button class="calc-btn" onclick="calcClear()">C</button>
+<button class="calc-btn" onclick="calcAppend('(')">(</button>
+<button class="calc-btn" onclick="calcAppend(')')">)</button>
+<button class="calc-btn" onclick="calcAppend('/')">/</button>
+<button class="calc-btn" onclick="calcAppend('7')">7</button>
+<button class="calc-btn" onclick="calcAppend('8')">8</button>
+<button class="calc-btn" onclick="calcAppend('9')">9</button>
+<button class="calc-btn" onclick="calcAppend('*')">*</button>
+<button class="calc-btn" onclick="calcAppend('4')">4</button>
+<button class="calc-btn" onclick="calcAppend('5')">5</button>
+<button class="calc-btn" onclick="calcAppend('6')">6</button>
+<button class="calc-btn" onclick="calcAppend('-')">-</button>
+<button class="calc-btn" onclick="calcAppend('1')">1</button>
+<button class="calc-btn" onclick="calcAppend('2')">2</button>
+<button class="calc-btn" onclick="calcAppend('3')">3</button>
+<button class="calc-btn" onclick="calcAppend('+')">+</button>
+<button class="calc-btn" onclick="calcAppend('0')" style="grid-column: span 2;">0</button>
+<button class="calc-btn" onclick="calcAppend('.')">.</button>
+<button class="calc-btn primary-btn" onclick="calcCompute()">=</button>
+</div>
+</div>
+<div>
+<h3>Calculation History</h3>
+<div id="calcHistory" style="margin-top: 0.5rem; max-height: 250px; overflow-y: auto;"></div>
+<button onclick="clearCalcHistory()" style="margin-top: 1rem;">Clear History</button>
+</div>
+</div>
+</div>
+
+<div id="app-stopwatch" class="app-view">
+<div class="app-header">
+<h2>Stopwatch & Timer</h2>
+<button class="back-btn" onclick="showDashboard()">Back</button>
+</div>
+<div class="grid-2">
+<div class="flex-col" style="align-items: center; text-align: center;">
+<h3>Stopwatch</h3>
+<div class="pomodoro-display" id="swDisplay">00:00:00</div>
+<div class="flex-row">
+<button class="primary-btn" onclick="toggleStopwatch()">Start</button>
+<button onclick="lapStopwatch()">Lap</button>
+<button onclick="resetStopwatch()">Reset</button>
+</div>
+<div id="swLaps" style="max-height: 150px; overflow-y: auto; width: 100%; margin-top: 1rem;"></div>
+</div>
+<div class="flex-col" style="align-items: center; text-align: center;">
+<h3>Countdown Timer</h3>
+<div class="flex-row" style="justify-content: center;">
+<input type="number" id="timerMinutes" placeholder="M" style="width: 70px;" value="5">
+<input type="number" id="timerSeconds" placeholder="S" style="width: 70px;" value="0">
+</div>
+<div class="pomodoro-display" id="timerDisplay">05:00</div>
+<div class="flex-row">
+<button class="primary-btn" onclick="toggleTimer()">Start</button>
+<button onclick="resetTimer()">Reset</button>
+</div>
+</div>
+</div>
+</div>
+
+<div id="app-password" class="app-view">
+<div class="app-header">
+<h2>Password Generator</h2>
+<button class="back-btn" onclick="showDashboard()">Back</button>
+</div>
+<div class="flex-col" style="max-width: 400px; margin: 0 auto;">
+<div class="flex-row">
+<input type="text" id="pwdOutput" readonly style="flex: 1; font-weight: bold;">
+<button class="primary-btn" onclick="copyPassword()">Copy</button>
+</div>
+<div class="flex-col" style="gap: 0.5rem;">
+<label>Length: <span id="pwdLenVal">12</span></label>
+<input type="range" id="pwdLength" min="6" max="32" value="12" oninput="document.getElementById('pwdLenVal').innerText=this.value">
+<label><input type="checkbox" id="pwdUpper" checked> Include Uppercase</label>
+<label><input type="checkbox" id="pwdLower" checked> Include Lowercase</label>
+<label><input type="checkbox" id="pwdNum" checked> Include Numbers</label>
+<label><input type="checkbox" id="pwdSym" checked> Include Symbols</label>
+</div>
+<button class="primary-btn" onclick="generatePassword()">Generate Password</button>
+</div>
+</div>
+
+<div id="app-quiz" class="app-view">
+<div class="app-header">
+<h2>Quiz Game</h2>
+<button class="back-btn" onclick="showDashboard()">Back</button>
+</div>
+<div id="quizContainer" style="max-width: 600px; margin: 0 auto;">
+<div id="quizStartScreen" class="flex-col" style="align-items: center; text-align: center;">
+<p>Test your knowledge with 5 general trivia questions!</p>
+<button class="primary-btn" onclick="startQuiz()">Start Quiz</button>
+</div>
+<div id="quizActiveScreen" style="display: none;">
+<div class="flex-row" style="justify-content: space-between; margin-bottom: 1rem;">
+<span id="quizQuestionNum">Question 1/5</span>
+<span id="quizTimer">Time: 15s</span>
+</div>
+<h3 id="quizQuestionText" style="margin-bottom: 1rem;">Question goes here</h3>
+<div id="quizOptions" class="flex-col"></div>
+</div>
+<div id="quizEndScreen" style="display: none; text-align: center;" class="flex-col">
+<h3>Quiz Completed!</h3>
+<p id="quizFinalScore">Your Score: 0/5</p>
+<button class="primary-btn" onclick="startQuiz()">Play Again</button>
+</div>
+</div>
+</div>
+
+<div id="app-snake" class="app-view">
+<div class="app-header">
+<h2>Snake Game</h2>
+<button class="back-btn" onclick="showDashboard()">Back</button>
+</div>
+<div class="flex-col" style="align-items: center;">
+<div class="flex-row" style="justify-content: space-between; width: 400px; margin-bottom: 0.5rem;">
+<span>Score: <strong id="snakeScore">0</strong></span>
+<span>High Score: <strong id="snakeHighScore">0</strong></span>
+</div>
+<canvas id="snakeCanvas" width="400" height="400"></canvas>
+<div class="flex-row" style="margin-top: 1rem;">
+<button class="primary-btn" onclick="startSnake()">Start / Restart</button>
+</div>
+<p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">Use Arrow Keys to control the snake.</p>
+</div>
+</div>
+
+<div id="app-memory" class="app-view">
+<div class="app-header">
+<h2>Memory Card Game</h2>
+<button class="back-btn" onclick="showDashboard()">Back</button>
+</div>
+<div class="flex-col" style="align-items: center;">
+<div class="flex-row" style="margin-bottom: 1rem;">
+<span>Moves: <strong id="memoryMoves">0</strong></span>
+<button class="primary-btn" onclick="startMemoryGame()">Restart</button>
+</div>
+<div class="memory-grid" id="memoryGrid"></div>
+</div>
+</div>
+
+<div id="app-tictactoe" class="app-view">
+<div class="app-header">
+<h2>Tic-Tac-Toe</h2>
+<button class="back-btn" onclick="showDashboard()">Back</button>
+</div>
+<div class="flex-col" style="align-items: center;">
+<h3 id="tttStatus">Your turn (X)</h3>
+<div class="ttt-grid" id="tttGrid">
+<div class="ttt-cell" onclick="tttCellClick(0)"></div>
+<div class="ttt-cell" onclick="tttCellClick(1)"></div>
+<div class="ttt-cell" onclick="tttCellClick(2)"></div>
+<div class="ttt-cell" onclick="tttCellClick(3)"></div>
+<div class="ttt-cell" onclick="tttCellClick(4)"></div>
+<div class="ttt-cell" onclick="tttCellClick(5)"></div>
+<div class="ttt-cell" onclick="tttCellClick(6)"></div>
+<div class="ttt-cell" onclick="tttCellClick(7)"></div>
+<div class="ttt-cell" onclick="tttCellClick(8)"></div>
+</div>
+<button class="primary-btn" onclick="resetTTT()">Restart Game</button>
+</div>
+</div>
+
+<div id="app-flashcards" class="app-view">
+<div class="app-header">
+<h2>Flashcards</h2>
+<button class="back-btn" onclick="showDashboard()">Back</button>
+</div>
+<div class="flex-col" style="max-width: 500px; margin: 0 auto;">
+<div class="flashcard-form">
+<input type="text" id="fcFront" placeholder="Front (Term)" style="flex:1;">
+<input type="text" id="fcBack" placeholder="Back (Definition)" style="flex:1;">
+<button class="primary-btn" onclick="addFlashcard()">Add Card</button>
+</div>
+<div class="flashcard-container" id="flashcardContainer" onclick="flipFlashcard()">
+<div class="flashcard-inner">
+<div class="flashcard-front" id="fcFrontText">Add cards to begin studying!</div>
+<div class="flashcard-back" id="fcBackText">Definition here</div>
+</div>
+</div>
+<div class="flex-row" style="justify-content: center; gap: 1rem;">
+<button onclick="prevFlashcard()">Previous</button>
+<span id="fcCounter">0 / 0</span>
+<button onclick="nextFlashcard()">Next</button>
+<button onclick="shuffleFlashcards()">Shuffle</button>
+</div>
+</div>
+</div>
+
+<div id="app-typing" class="app-view">
+<div class="app-header">
+<h2>Typing Speed Test</h2>
+<button class="back-btn" onclick="showDashboard()">Back</button>
+</div>
+<div class="flex-col" style="max-width: 600px; margin: 0 auto;">
+<div class="typing-box" id="typingBox" tabindex="0">Click here to start typing test...</div>
+<div class="flex-row" style="justify-content: space-between;">
+<span>WPM: <strong id="typingWpm">0</strong></span>
+<span>Accuracy: <strong id="typingAcc">100%</strong></span>
+<button class="primary-btn" onclick="resetTypingTest()">Reset Test</button>
+</div>
+</div>
+</div>
+
+</main>
+<script>
+// Theme Toggle
+function toggleTheme() {
+const body = document.body;
+const currentTheme = body.getAttribute("data-theme");
+const newTheme = currentTheme === "light" ? "dark" : "light";
+body.setAttribute("data-theme", newTheme);
+localStorage.setItem("hub2_theme", newTheme);
+}
+window.addEventListener("DOMContentLoaded", () => {
+const savedTheme = localStorage.getItem("hub2_theme") || "light";
+document.body.setAttribute("data-theme", savedTheme);
+loadAllData();
+renderTodos();
+renderNotes();
+renderExpenses();
+renderHabits();
+renderBudget();
+renderCalcHistory();
+renderFlashcards();
+initConverter();
+});
+
+// Navigation and Shortcuts
+const appIds = ['todo', 'notes', 'pomodoro', 'expense', 'habits', 'budget', 'converter', 'calculator', 'stopwatch', 'password', 'quiz', 'snake', 'memory', 'tictactoe', 'flashcards', 'typing'];
+function openApp(name) {
+document.getElementById('dashboard').style.display = 'none';
+document.querySelectorAll('.app-view').forEach(el => el.classList.remove('active'));
+const target = document.getElementById('app-' + name);
+if (target) target.classList.add('active');
+window.scrollTo(0,0);
+}
+function showDashboard() {
+document.querySelectorAll('.app-view').forEach(el => el.classList.remove('active'));
+document.getElementById('dashboard').style.display = 'grid';
+window.scrollTo(0,0);
+}
+window.addEventListener('keydown', (e) => {
+if (e.altKey) {
+if (e.key.toLowerCase() === 'h') {
+showDashboard();
+e.preventDefault();
+} else {
+const num = parseInt(e.key);
+if (!isNaN(num) && num >= 1 && num <= appIds.length) {
+openApp(appIds[num - 1]);
+e.preventDefault();
+}
+}
+}
+});
+
+// Global Data Storage Helpers
+function saveData(key, data) {
+localStorage.setItem('hub2_' + key, JSON.stringify(data));
+}
+function loadData(key, fallback) {
+const val = localStorage.getItem('hub2_' + key);
+return val ? JSON.parse(val) : fallback;
+}
+function loadAllData() {}
+
+// 1. To-Do App
+let todos = loadData('todos', []);
+function addTodo() {
+const text = document.getElementById('todoInput').value.trim();
+const priority = document.getElementById('todoPriority').value;
+const date = document.getElementById('todoDate').value;
+if (!text) return;
+todos.push({ id: Date.now(), text, priority, date, completed: false });
+saveData('todos', todos);
+document.getElementById('todoInput').value = '';
+document.getElementById('todoDate').value = '';
+renderTodos();
+}
+function toggleTodo(id) {
+todos = todos.map(t => t.id === id ? { ...t, completed: !t.completed } : t);
+saveData('todos', todos);
+renderTodos();
+}
+function deleteTodo(id) {
+todos = todos.filter(t => t.id !== id);
+saveData('todos', todos);
+renderTodos();
+}
+function clearCompletedTodos() {
+todos = todos.filter(t => !t.completed);
+saveData('todos', todos);
+renderTodos();
+}
+function renderTodos() {
+const filter = document.getElementById('todoFilter').value;
+const list = document.getElementById('todoList');
+list.innerHTML = '';
+let filtered = todos;
+if (filter === 'active') filtered = todos.filter(t => !t.completed);
+if (filter === 'completed') filtered = todos.filter(t => t.completed);
+filtered.forEach(t => {
+const div = document.createElement('div');
+div.className = `todo-item ${t.completed ? 'completed' : ''}`;
+div.innerHTML = `
+<div class="flex-row">
+<input type="checkbox" ${t.completed ? 'checked' : ''} onchange="toggleTodo(${t.id})">
+<span>${t.text}</span>
+<small style="color:var(--text-muted)">[${t.priority}] ${t.date ? t.date : ''}</small>
+</div>
+<button class="danger-btn" onclick="deleteTodo(${t.id})" style="padding:0.25rem 0.5rem; font-size:0.8rem;">Delete</button>
+`;
+list.appendChild(div);
+});
+}
+
+// 2. Notes App
+let notes = loadData('notes', []);
+function addNote() {
+const title = document.getElementById('noteTitle').value.trim();
+const content = document.getElementById('noteContent').value.trim();
+const color = document.getElementById('noteColor').value;
+if (!title && !content) return;
+notes.push({ id: Date.now(), title, content, color });
+saveData('notes', notes);
+document.getElementById('noteTitle').value = '';
+document.getElementById('noteContent').value = '';
+renderNotes();
+}
+function deleteNote(id) {
+notes = notes.filter(n => n.id !== id);
+saveData('notes', notes);
+renderNotes();
+}
+function renderNotes() {
+const search = document.getElementById('noteSearch').value.toLowerCase();
+const list = document.getElementById('notesList');
+list.innerHTML = '';
+notes.filter(n => n.title.toLowerCase().includes(search) || n.content.toLowerCase().includes(search)).forEach(n => {
+const div = document.createElement('div');
+div.className = 'note-item flex-col';
+div.style.backgroundColor = n.color;
+div.style.color = '#333';
+div.innerHTML = `
+<div style="display:flex; justify-content:space-between; align-items:center;">
+<h4 style="font-weight:bold;">${n.title || 'Untitled'}</h4>
+<button class="danger-btn" onclick="deleteNote(${n.id})" style="padding:0.2rem 0.4rem; font-size:0.75rem;">X</button>
+</div>
+<p style="white-space:pre-wrap; font-size:0.9rem;">${n.content}</p>
+`;
+list.appendChild(div);
+});
+}
+
+// 3. Pomodoro Timer
+let pomodoroTime = 25 * 60;
+let pomodoroInterval = null;
+let pomodoroRunning = false;
+let pomodoroMode = 'work';
+let pomodoroStatsCount = loadData('pomodoroStats', 0);
+document.getElementById('pomodoroStats').innerText = `Completed Sessions Today: ${pomodoroStatsCount}`;
+
+function setPomodoroMode(mode) {
+clearInterval(pomodoroInterval);
+pomodoroRunning = false;
+document.getElementById('pomodoroStartBtn').innerText = 'Start';
+pomodoroMode = mode;
+if (mode === 'work') pomodoroTime = 25 * 60;
+if (mode === 'shortBreak') pomodoroTime = 5 * 60;
+if (mode === 'longBreak') pomodoroTime = 15 * 60;
+updatePomodoroDisplay();
+}
+function updatePomodoroDisplay() {
+const m = Math.floor(pomodoroTime / 60);
+const s = pomodoroTime % 60;
+document.getElementById('pomodoroDisplay').innerText = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+function togglePomodoro() {
+if (pomodoroRunning) {
+clearInterval(pomodoroInterval);
+pomodoroRunning = false;
+document.getElementById('pomodoroStartBtn').innerText = 'Start';
+} else {
+pomodoroRunning = true;
+document.getElementById('pomodoroStartBtn').innerText = 'Pause';
+pomodoroInterval = setInterval(() => {
+if (pomodoroTime > 0) {
+pomodoroTime--;
+updatePomodoroDisplay();
+} else {
+clearInterval(pomodoroInterval);
+pomodoroRunning = false;
+document.getElementById('pomodoroStartBtn').innerText = 'Start';
+if (pomodoroMode === 'work') {
+pomodoroStatsCount++;
+saveData('pomodoroStats', pomodoroStatsCount);
+document.getElementById('pomodoroStats').innerText = `Completed Sessions Today: ${pomodoroStatsCount}`;
+alert('Work session completed! Take a break.');
+} else {
+alert('Break finished! Back to work.');
+}
+}
+}, 1000);
+}
+}
+function resetPomodoro() {
+clearInterval(pomodoroInterval);
+pomodoroRunning = false;
+document.getElementById('pomodoroStartBtn').innerText = 'Start';
+setPomodoroMode(pomodoroMode);
+}
+
+// 4. Expense Tracker
+let expenses = loadData('expenses', []);
+function addExpense() {
+const desc = document.getElementById('expenseDesc').value.trim();
+const amount = parseFloat(document.getElementById('expenseAmount').value);
+const category = document.getElementById('expenseCategory').value;
+if (!desc || isNaN(amount)) return;
+expenses.push({ id: Date.now(), desc, amount, category });
+saveData('expenses', expenses);
+document.getElementById('expenseDesc').value = '';
+document.getElementById('expenseAmount').value = '';
+renderExpenses();
+}
+function deleteExpense(id) {
+expenses = expenses.filter(e => e.id !== id);
+saveData('expenses', expenses);
+renderExpenses();
+}
+function renderExpenses() {
+const list = document.getElementById('expenseList');
+list.innerHTML = '';
+expenses.forEach(e => {
+const div = document.createElement('div');
+div.className = 'expense-item';
+div.innerHTML = `
+<span>${e.desc} (${e.category})</span>
+<div class="flex-row">
+<strong>$${e.amount.toFixed(2)}</strong>
+<button class="danger-btn" onclick="deleteExpense(${e.id})" style="padding:0.2rem 0.5rem; font-size:0.8rem;">Delete</button>
+</div>
+`;
+list.appendChild(div);
+});
+drawExpenseChart();
+checkBudgetAlerts();
+}
+function drawExpenseChart() {
+const canvas = document.getElementById('expenseCanvas');
+const ctx = canvas.getContext('2d');
+canvas.width = canvas.parentElement.clientWidth;
+canvas.height = canvas.parentElement.clientHeight;
+ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+const categories = ['Food', 'Transport', 'Utilities', 'Entertainment', 'Other'];
+const totals = categories.map(cat => expenses.filter(e => e.category === cat).reduce((sum, e) => sum + e.amount, 0));
+const maxVal = Math.max(...totals, 10);
+
+const barWidth = (canvas.width - 60) / categories.length;
+const chartHeight = canvas.height - 40;
+
+ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue('--border-color');
+ctx.beginPath();
+ctx.moveTo(40, 10);
+ctx.lineTo(40, chartHeight);
+ctx.lineTo(canvas.width - 10, chartHeight);
+ctx.stroke();
+
+totals.forEach((val, idx) => {
+const x = 50 + idx * barWidth;
+const h = (val / maxVal) * (chartHeight - 30);
+const y = chartHeight - h;
+
+ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--primary');
+ctx.fillRect(x, y, barWidth - 15, h);
+
+ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--text-color');
+ctx.font = '10px sans-serif';
+ctx.fillText(categories[idx].substring(0,4), x, chartHeight + 15);
+ctx.fillText('$' + val, x, y - 5);
+});
+}
+
+// 5. Habit Tracker
+let habits = loadData('habits', []);
+function addHabit() {
+const name = document.getElementById('habitNameInput').value.trim();
+if (!name) return;
+habits.push({ id: Date.now(), name, days: [false, false, false, false, false, false, false] });
+saveData('habits', habits);
+document.getElementById('habitNameInput').value = '';
+renderHabits();
+}
+function toggleHabitDay(habitId, dayIndex) {
+habits = habits.map(h => {
+if (h.id === habitId) {
+const newDays = [...h.days];
+newDays[dayIndex] = !newDays[dayIndex];
+return { ...h, days: newDays };
+}
+return h;
+});
+saveData('habits', habits);
+renderHabits();
+}
+function deleteHabit(id) {
+habits = habits.filter(h => h.id !== id);
+saveData('habits', habits);
+renderHabits();
+}
+function renderHabits() {
+const list = document.getElementById('habitList');
+list.innerHTML = '';
+const dayNames = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+habits.forEach(h => {
+const div = document.createElement('div');
+div.className = 'habit-item';
+let daysHtml = '';
+h.days.forEach((checked, idx) => {
+daysHtml += `<div class="habit-day ${checked ? 'checked' : ''}" onclick="toggleHabitDay(${h.id}, ${idx})">${dayNames[idx]}</div>`;
+});
+div.innerHTML = `
+<span>${h.name}</span>
+<div class="habit-grid">${daysHtml}</div>
+<button class="danger-btn" onclick="deleteHabit(${h.id})" style="padding:0.2rem 0.5rem; font-size:0.8rem;">Delete</button>
+`;
+list.appendChild(div);
+});
+}
+
+// 6. Budget Planner
+let budgetData = loadData('budgetData', { income: 0, limits: {} });
+document.getElementById('budgetIncome').value = budgetData.income || '';
+
+function saveBudgetIncome() {
+budgetData.income = parseFloat(document.getElementById('budgetIncome').value) || 0;
+saveData('budgetData', budgetData);
+renderBudget();
+}
+function setCategoryBudget() {
+const cat = document.getElementById('budgetCategory').value;
+const limit = parseFloat(document.getElementById('budgetLimit').value) || 0;
+budgetData.limits[cat] = limit;
+saveData('budgetData', budgetData);
+document.getElementById('budgetLimit').value = '';
+renderBudget();
+}
+function renderBudget() {
+const overview = document.getElementById('budgetOverview');
+overview.innerHTML = '';
+const categories = ['Food', 'Transport', 'Utilities', 'Entertainment', 'Other'];
+let totalSpent = 0;
+
+categories.forEach(cat => {
+const spent = expenses.filter(e => e.category === cat).reduce((sum, e) => sum + e.amount, 0);
+totalSpent += spent;
+const limit = budgetData.limits[cat] || 0;
+const div = document.createElement('div');
+div.className = 'budget-item';
+div.innerHTML = `
+<span><strong>${cat}</strong>: $${spent.toFixed(2)} / Limit: $${limit.toFixed(2)}</span>
+<span style="color: ${limit && spent > limit ? 'var(--danger)' : 'var(--accent)'}">${limit ? (spent > limit ? 'Over Budget!' : 'On Track') : 'No Limit'}</span>
+`;
+overview.appendChild(div);
+});
+
+const summaryDiv = document.createElement('div');
+summaryDiv.style.marginTop = '1rem';
+summaryDiv.innerHTML = `<h4>Total Income: $${(budgetData.income || 0).toFixed(2)} | Total Spent: $${totalSpent.toFixed(2)} | Balance: $${((budgetData.income || 0) - totalSpent).toFixed(2)}</h4>`;
+overview.appendChild(summaryDiv);
+}
+function checkBudgetAlerts() {
+renderBudget();
+}
+
+// 7. Unit Converter
+const convUnitsData = {
+length: { m: 1, km: 1000, cm: 0.01, mm: 0.001, mi: 1609.34, ft: 0.3048 },
+weight: { kg: 1, g: 0.001, mg: 0.000001, lb: 0.453592, oz: 0.0283495 },
+temperature: { c: 'C', f: 'F', k: 'K' },
+data: { b: 1, kb: 1024, mb: 1048576, gb: 1073741824 }
+};
+function initConverter() {
+updateConverterUnits();
+}
+function updateConverterUnits() {
+const type = document.getElementById('convType').value;
+const u1 = document.getElementById('convUnit1');
+const u2 = document.getElementById('convUnit2');
+u1.innerHTML = '';
+u2.innerHTML = '';
+const keys = Object.keys(convUnitsData[type]);
+keys.forEach(k => {
+u1.add(new Option(k.toUpperCase(), k));
+u2.add(new Option(k.toUpperCase(), k));
+});
+if (u2.options.length > 1) u2.selectedIndex = 1;
+convertUnits(1);
+}
+function convertUnits(source) {
+const type = document.getElementById('convType').value;
+const v1 = document.getElementById('convValue1');
+const v2 = document.getElementById('convValue2');
+const u1 = document.getElementById('convUnit1').value;
+const u2 = document.getElementById('convUnit2').value;
+
+if (type === 'temperature') {
+let val = source === 1 ? parseFloat(v1.value) : parseFloat(v2.value);
+if (isNaN(val)) return;
+let celsius = 0;
+if (u1 === 'c') celsius = val;
+if (u1 === 'f') celsius = (val - 32) * 5/9;
+if (u1 === 'k') celsius = val - 273.15;
+
+let res = celsius;
+if (u2 === 'f') res = celsius * 9/5 + 32;
+if (u2 === 'k') res = celsius + 273.15;
+
+if (source === 1) v2.value = res.toFixed(2);
+else v1.value = res.toFixed(2);
+return;
+}
+
+const table = convUnitsData[type];
+let val = source === 1 ? parseFloat(v1.value) : parseFloat(v2.value);
+if (isNaN(val)) return;
+let baseVal = val * table[u1];
+let targetVal = baseVal / table[u2];
+
+if (source === 1) v2.value = targetVal.toFixed(4);
+else v1.value = targetVal.toFixed(4);
+}
+
+// 8. Calculator
+let calcExpression = "";
+let calcHistoryList = loadData('calcHistory', []);
+function calcAppend(val) {
+calcExpression += val;
+document.getElementById('calcDisplay').innerText = calcExpression;
+}
+function calcClear() {
+calcExpression = "";
+document.getElementById('calcDisplay').innerText = "0";
+}
+function calcCompute() {
+try {
+let result = eval(calcExpression);
+calcHistoryList.unshift({ expr: calcExpression, res: result });
+if (calcHistoryList.length > 20) calcHistoryList.pop();
+saveData('calcHistory', calcHistoryList);
+renderCalcHistory();
+calcExpression = String(result);
+document.getElementById('calcDisplay').innerText = calcExpression;
+} catch(e) {
+document.getElementById('calcDisplay').innerText = "Error";
+calcExpression = "";
+}
+}
+function renderCalcHistory() {
+const hist = document.getElementById('calcHistory');
+hist.innerHTML = '';
+calcHistoryList.forEach(h => {
+const div = document.createElement('div');
+div.style.padding = '0.25rem 0';
+div.style.borderBottom = '1px solid var(--border-color)';
+div.innerText = `${h.expr} = ${h.res}`;
+hist.appendChild(div);
+});
+}
+function clearCalcHistory() {
+calcHistoryList = [];
+saveData('calcHistory', []);
+renderCalcHistory();
+}
+
+// 9. Stopwatch & Timer
+let swInterval = null;
+let swTime = 0;
+let swRunning = false;
+let swLapsList = [];
+
+function formatTime(ms) {
+const m = Math.floor(ms / 60000);
+const s = Math.floor((ms % 60000) / 1000);
+const cs = Math.floor((ms % 1000) / 10);
+return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}:${String(cs).padStart(2,'0')}`;
+}
+function toggleStopwatch() {
+if (swRunning) {
+clearInterval(swInterval);
+swRunning = false;
+} else {
+swRunning = true;
+let start = Date.now() - swTime;
+swInterval = setInterval(() => {
+swTime = Date.now() - start;
+document.getElementById('swDisplay').innerText = formatTime(swTime);
+}, 30);
+}
+}
+function lapStopwatch() {
+if (!swRunning) return;
+swLapsList.push(formatTime(swTime));
+const lapsDiv = document.getElementById('swLaps');
+lapsDiv.innerHTML = '';
+swLapsList.forEach((l, idx) => {
+lapsDiv.innerHTML += `<div>Lap ${idx+1}: ${l}</div>`;
+});
+}
+function resetStopwatch() {
+clearInterval(swInterval);
+swRunning = false;
+swTime = 0;
+swLapsList = [];
+document.getElementById('swDisplay').innerText = "00:00:00";
+document.getElementById('swLaps').innerHTML = '';
+}
+
+let timerInterval = null;
+let timerTime = 300;
+let timerRunning = false;
+
+function toggleTimer() {
+if (timerRunning) {
+clearInterval(timerInterval);
+timerRunning = false;
+} else {
+if (timerTime <= 0) {
+const m = parseInt(document.getElementById('timerMinutes').value) || 0;
+const s = parseInt(document.getElementById('timerSeconds').value) || 0;
+timerTime = m * 60 + s;
+}
+if (timerTime <= 0) return;
+timerRunning = true;
+timerInterval = setInterval(() => {
+if (timerTime > 0) {
+timerTime--;
+let m = Math.floor(timerTime / 60);
+let s = timerTime % 60;
+document.getElementById('timerDisplay').innerText = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+} else {
+clearInterval(timerInterval);
+timerRunning = false;
+alert('Countdown Timer finished!');
+}
+}, 1000);
+}
+}
+function resetTimer() {
+clearInterval(timerInterval);
+timerRunning = false;
+const m = parseInt(document.getElementById('timerMinutes').value) || 0;
+const s = parseInt(document.getElementById('timerSeconds').value) || 0;
+timerTime = m * 60 + s;
+document.getElementById('timerDisplay').innerText = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+document.getElementById('timerMinutes').addEventListener('input', resetTimer);
+document.getElementById('timerSeconds').addEventListener('input', resetTimer);
+
+// 10. Password Generator
+function generatePassword() {
+const len = parseInt(document.getElementById('pwdLength').value);
+const upper = document.getElementById('pwdUpper').checked;
+const lower = document.getElementById('pwdLower').checked;
+const num = document.getElementById('pwdNum').checked;
+const sym = document.getElementById('pwdSym').checked;
+
+let chars = "";
+if (upper) chars += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+if (lower) chars += "abcdefghijklmnopqrstuvwxyz";
+if (num) chars += "0123456789";
+if (sym) chars += "!@#$%^&*()_+~`|}{[]:;?><,./-=";
+
+if (!chars) {
+document.getElementById('pwdOutput').value = "Select at least one option";
+return;
+}
+
+let pwd = "";
+for (let i = 0; i < len; i++) {
+pwd += chars.charAt(Math.floor(Math.random() * chars.length));
+}
+document.getElementById('pwdOutput').value = pwd;
+}
+function copyPassword() {
+const copyText = document.getElementById('pwdOutput');
+copyText.select();
+navigator.clipboard.writeText(copyText.value);
+alert("Password copied to clipboard!");
+}
+
+// 11. Quiz Game
+const quizQuestions = [
+{ q: "What is the capital of France?", options: ["London", "Berlin", "Paris", "Madrid"], answer: 2 },
+{ q: "Which planet is known as the Red Planet?", options: ["Venus", "Mars", "Jupiter", "Saturn"], answer: 1 },
+{ q: "What is 7 * 8?", options: ["54", "56", "64", "48"], answer: 1 },
+{ q: "Who wrote 'Hamlet'?", options: ["Charles Dickens", "Mark Twain", "William Shakespeare", "Leo Tolstoy"], answer: 2 },
+{ q: "What is the chemical symbol for Gold?", options: ["Ag", "Au", "Pb", "Fe"], answer: 1 }
+];
+let quizIdx = 0;
+let quizScore = 0;
+let quizTimerInterval = null;
+let quizTimeLeft = 15;
+
+function startQuiz() {
+quizIdx = 0;
+quizScore = 0;
+document.getElementById('quizStartScreen').style.display = 'none';
+document.getElementById('quizEndScreen').style.display = 'none';
+document.getElementById('quizActiveScreen').style.display = 'block';
+loadQuizQuestion();
+}
+function loadQuizQuestion() {
+if (quizIdx >= quizQuestions.length) {
+endQuiz();
+return;
+}
+clearInterval(quizTimerInterval);
+quizTimeLeft = 15;
+document.getElementById('quizTimer').innerText = `Time: ${quizTimeLeft}s`;
+quizTimerInterval = setInterval(() => {
+quizTimeLeft--;
+document.getElementById('quizTimer').innerText = `Time: ${quizTimeLeft}s`;
+if (quizTimeLeft <= 0) {
+clearInterval(quizTimerInterval);
+quizIdx++;
+loadQuizQuestion();
+}
+}, 1000);
+
+const qObj = quizQuestions[quizIdx];
+document.getElementById('quizQuestionNum').innerText = `Question ${quizIdx + 1}/${quizQuestions.length}`;
+document.getElementById('quizQuestionText').innerText = qObj.q;
+const opts = document.getElementById('quizOptions');
+opts.innerHTML = '';
+qObj.options.forEach((opt, idx) => {
+const btn = document.createElement('button');
+btn.className = 'calc-btn';
+btn.style.textAlign = 'left';
+btn.innerText = opt;
+btn.onclick = () => {
+clearInterval(quizTimerInterval);
+if (idx === qObj.answer) quizScore++;
+quizIdx++;
+loadQuizQuestion();
+};
+opts.appendChild(btn);
+});
+}
+function endQuiz() {
+document.getElementById('quizActiveScreen').style.display = 'none';
+document.getElementById('quizEndScreen').style.display = 'flex';
+document.getElementById('quizFinalScore').innerText = `Your Score: ${quizScore}/${quizQuestions.length}`;
+}
+
+// 12. Snake Game
+const snakeCanvas = document.getElementById('snakeCanvas');
+const snakeCtx = snakeCanvas.getContext('2d');
+let snake = [];
+let food = { x: 0, y: 0 };
+let dx = 20;
+let dy = 0;
+let snakeScore = 0;
+let snakeHighScore = loadData('snakeHighScore', 0);
+document.getElementById('snakeHighScore').innerText = snakeHighScore;
+let snakeInterval = null;
+let changingDirection = false;
+
+function startSnake() {
+snake = [ {x: 160, y: 200}, {x: 140, y: 200}, {x: 120, y: 200} ];
+snakeScore = 0;
+document.getElementById('snakeScore').innerText = snakeScore;
+dx = 20;
+dy = 0;
+createFood();
+clearInterval(snakeInterval);
+snakeInterval = setInterval(mainSnake, 100);
+}
+function mainSnake() {
+if (hasGameEnded()) {
+clearInterval(snakeInterval);
+alert('Game Over! Final Score: ' + snakeScore);
+return;
+}
+changingDirection = false;
+clearSnakeCanvas();
+drawFood();
+moveSnake();
+drawSnake();
+}
+function clearSnakeCanvas() {
+snakeCtx.fillStyle = '#000';
+snakeCtx.fillRect(0, 0, snakeCanvas.width, snakeCanvas.height);
+}
+function drawSnake() {
+snake.forEach(part => {
+snakeCtx.fillStyle = '#10b981';
+snakeCtx.strokeStyle = '#000';
+snakeCtx.fillRect(part.x, part.y, 20, 20);
+snakeCtx.strokeRect(part.x, part.y, 20, 20);
+});
+}
+function moveSnake() {
+const head = {x: snake[0].x + dx, y: snake[0].y + dy};
+snake.unshift(head);
+const hasEatenFood = snake[0].x === food.x && snake[0].y === food.y;
+if (hasEatenFood) {
+snakeScore += 10;
+document.getElementById('snakeScore').innerText = snakeScore;
+if (snakeScore > snakeHighScore) {
+snakeHighScore = snakeScore;
+document.getElementById('snakeHighScore').innerText = snakeHighScore;
+saveData('snakeHighScore', snakeHighScore);
+}
+createFood();
+} else {
+snake.pop();
+}
+}
+function randomTen(min, max) {
+return Math.round((Math.random() * (max-min) + min) / 20) * 20;
+}
+function createFood() {
+food.x = randomTen(0, snakeCanvas.width - 20);
+food.y = randomTen(0, snakeCanvas.height - 20);
+snake.forEach(part => {
+if (part.x === food.x && part.y === food.y) createFood();
+});
+}
+function drawFood() {
+snakeCtx.fillStyle = '#ef4444';
+snakeCtx.strokeStyle = '#000';
+snakeCtx.fillRect(food.x, food.y, 20, 20);
+snakeCtx.strokeRect(food.x, food.y, 20, 20);
+}
+function hasGameEnded() {
+for (let i = 4; i < snake.length; i++) {
+if (snake[i].x === snake[0].x && snake[i].y === snake[0].y) return true;
+}
+const hitLeftWall = snake[0].x < 0;
+const hitRightWall = snake[0].x >= snakeCanvas.width;
+const hitToptWall = snake[0].y < 0;
+const hitBottomWall = snake[0].y >= snakeCanvas.height;
+return hitLeftWall || hitRightWall || hitToptWall || hitBottomWall;
+}
+window.addEventListener('keydown', e => {
+if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) e.preventDefault();
+if (changingDirection) return;
+const keyPressed = e.key;
+const goingUp = dy === -20;
+const goingDown = dy === 20;
+const goingRight = dx === 20;
+const goingLeft = dx === -20;
+if (keyPressed === 'ArrowLeft' && !goingRight) { dx = -20; dy = 0; changingDirection = true; }
+if (keyPressed === 'ArrowUp' && !goingDown) { dx = 0; dy = -20; changingDirection = true; }
+if (keyPressed === 'ArrowRight' && !goingLeft) { dx = 20; dy = 0; changingDirection = true; }
+if (keyPressed === 'ArrowDown' && !goingUp) { dx = 0; dy = 20; changingDirection = true; }
+});
+
+// 13. Memory Card Matching Game
+const memoryEmojis = ['🍎', '🍌', '🍇', '🍉', '🍓', '🍒', '🍍', '🥝'];
+let memoryCards = [];
+let flippedCards = [];
+let matchedPairs = 0;
+let memoryMoves = 0;
+
+function startMemoryGame() {
+memoryMoves = 0;
+matchedPairs = 0;
+document.getElementById('memoryMoves').innerText = memoryMoves;
+let deck = [...memoryEmojis, ...memoryEmojis].sort(() => Math.random() - 0.5);
+const grid = document.getElementById('memoryGrid');
+grid.innerHTML = '';
+memoryCards = deck.map((emoji, idx) => {
+const card = document.createElement('div');
+card.className = 'memory-card';
+card.dataset.emoji = emoji;
+card.dataset.index = idx;
+card.onclick = () => flipMemoryCard(card, emoji, idx);
+grid.appendChild(card);
+return { emoji, flipped: false, matched: false };
+});
+}
+function flipMemoryCard(cardElement, emoji, idx) {
+if (flippedCards.length >= 2 || cardElement.classList.contains('flipped') || memoryCards[idx].matched) return;
+cardElement.classList.add('flipped');
+cardElement.innerText = emoji;
+flippedCards.push({ element: cardElement, emoji, idx });
+
+if (flippedCards.length === 2) {
+memoryMoves++;
+document.getElementById('memoryMoves').innerText = memoryMoves;
+if (flippedCards[0].emoji === flippedCards[1].emoji) {
+memoryCards[flippedCards[0].idx].matched = true;
+memoryCards[flippedCards[1].idx].matched = true;
+matchedPairs++;
+flippedCards = [];
+if (matchedPairs === memoryEmojis.length) {
+setTimeout(() => alert('You won in ' + memoryMoves + ' moves!'), 200);
+}
+} else {
+setTimeout(() => {
+flippedCards[0].element.classList.remove('flipped');
+flippedCards[0].element.innerText = '';
+flippedCards[1].element.classList.remove('flipped');
+flippedCards[1].element.innerText = '';
+flippedCards = [];
+}, 1000);
+}
+}
+}
+
+// 14. Tic-Tac-Toe
+let tttBoard = ['', '', '', '', '', '', '', '', ''];
+let tttGameActive = true;
+
+function tttCellClick(idx) {
+if (!tttGameActive || tttBoard[idx] !== '') return;
+tttBoard[idx] = 'X';
+renderTTT();
+if (checkTTTWin('X')) {
+document.getElementById('tttStatus').innerText = 'You Win!';
+tttGameActive = false;
+return;
+}
+if (tttBoard.every(cell => cell !== '')) {
+document.getElementById('tttStatus').innerText = 'Draw!';
+tttGameActive = false;
+return;
+}
+document.getElementById('tttStatus').innerText = 'Computer thinking...';
+setTimeout(computerTTTMove, 500);
+}
+function computerTTTMove() {
+if (!tttGameActive) return;
+let emptyIndices = [];
+tttBoard.forEach((cell, idx) => { if (cell === '') emptyIndices.push(idx); });
+if (emptyIndices.length === 0) return;
+let compMove = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+tttBoard[compMove] = 'O';
+renderTTT();
+if (checkTTTWin('O')) {
+document.getElementById('tttStatus').innerText = 'Computer Wins!';
+tttGameActive = false;
+return;
+}
+if (tttBoard.every(cell => cell !== '')) {
+document.getElementById('tttStatus').innerText = 'Draw!';
+tttGameActive = false;
+return;
+}
+document.getElementById('tttStatus').innerText = 'Your turn (X)';
+}
+function checkTTTWin(player) {
+const wins = [
+[0,1,2], [3,4,5], [6,7,8],
+[0,3,6], [1,4,7], [2,5,8],
+[0,4,8], [2,4,6]
+];
+return wins.some(comb => comb.every(idx => tttBoard[idx] === player));
+}
+function renderTTT() {
+const cells = document.querySelectorAll('.ttt-cell');
+cells.forEach((cell, idx) => {
+cell.innerText = tttBoard[idx];
+});
+}
+function resetTTT() {
+tttBoard = ['', '', '', '', '', '', '', '', ''];
+tttGameActive = true;
+document.getElementById('tttStatus').innerText = 'Your turn (X)';
+renderTTT();
+}
+
+// 15. Flashcards App
+let flashcards = loadData('flashcards', [ { front: 'HTML', back: 'HyperText Markup Language' }, { front: 'CSS', back: 'Cascading Style Sheets' } ]);
+let fcIdx = 0;
+
+function addFlashcard() {
+const front = document.getElementById('fcFront').value.trim();
+const back = document.getElementById('fcBack').value.trim();
+if (!front || !back) return;
+flashcards.push({ front, back });
+saveData('flashcards', flashcards);
+document.getElementById('fcFront').value = '';
+document.getElementById('fcBack').value = '';
+renderFlashcards();
+}
+function flipFlashcard() {
+document.getElementById('flashcardContainer').classList.toggle('flipped');
+}
+function nextFlashcard() {
+if (flashcards.length === 0) return;
+document.getElementById('flashcardContainer').classList.remove('flipped');
+fcIdx = (fcIdx + 1) % flashcards.length;
+setTimeout(renderFlashcardsContent, 150);
+}
+function prevFlashcard() {
+if (flashcards.length === 0) return;
+document.getElementById('flashcardContainer').classList.remove('flipped');
+fcIdx = (fcIdx - 1 + flashcards.length) % flashcards.length;
+setTimeout(renderFlashcardsContent, 150);
+}
+function shuffleFlashcards() {
+flashcards.sort(() => Math.random() - 0.5);
+fcIdx = 0;
+renderFlashcards();
+}
+function renderFlashcards() {
+fcIdx = 0;
+renderFlashcardsContent();
+}
+function renderFlashcardsContent() {
+const container = document.getElementById('flashcardContainer');
+container.classList.remove('flipped');
+if (flashcards.length === 0) {
+document.getElementById('fcFrontText').innerText = 'Add cards to begin studying!';
+document.getElementById('fcBackText').innerText = 'Definition here';
+document.getElementById('fcCounter').innerText = '0 / 0';
+return;
+}
+document.getElementById('fcFrontText').innerText = flashcards[fcIdx].front;
+document.getElementById('fcBackText').innerText = flashcards[fcIdx].back;
+document.getElementById('fcCounter').innerText = `${fcIdx + 1} / ${flashcards.length}`;
+}
+
+// 16. Typing Speed Test
+const typingSampleText = "The quick brown fox jumps over the lazy dog and runs through the green fields towards the distant mountains.";
+let typingStarted = false;
+let typingStartTime = null;
+let typingCharIndex = 0;
+let typingErrors = 0;
+let typingInterval = null;
+
+const typingBox = document.getElementById('typingBox');
+function initTypingTest() {
+typingBox.innerHTML = '';
+typingSampleText.split('').forEach(char => {
+const span = document.createElement('span');
+span.className = 'typing-char';
+span.innerText = char;
+typingBox.appendChild(span);
+});
+if (typingBox.children[0]) typingBox.children[0].classList.add('current');
+}
+typingBox.addEventListener('click', () => {
+if (!typingStarted) {
+typingStarted = true;
+typingStartTime = Date.now();
+typingCharIndex = 0;
+typingErrors = 0;
+initTypingTest();
+typingInterval = setInterval(updateTypingStats, 500);
+}
+});
+window.addEventListener('keydown', e => {
+if (!typingStarted) return;
+if (e.key.length === 1) {
+const chars = typingBox.children;
+if (typingCharIndex < chars.length) {
+const targetChar = typingSampleText[typingCharIndex];
+if (e.key === targetChar) {
+chars[typingCharIndex].classList.add('correct');
+} else {
+chars[typingCharIndex].classList.add('incorrect');
+typingErrors++;
+}
+chars[typingCharIndex].classList.remove('current');
+typingCharIndex++;
+if (typingCharIndex < chars.length) {
+chars[typingCharIndex].classList.add('current');
+} else {
+clearInterval(typingInterval);
+alert('Test finished!');
+}
+updateTypingStats();
+e.preventDefault();
+}
+}
+});
+function updateTypingStats() {
+if (!typingStartTime) return;
+const timeElapsed = (Date.now() - typingStartTime) / 60000;
+if (timeElapsed <= 0) return;
+const wordsTyped = (typingCharIndex / 5);
+const wpm = Math.round(wordsTyped / timeElapsed);
+const accuracy = typingCharIndex === 0 ? 100 : Math.max(0, Math.round(((typingCharIndex - typingErrors) / typingCharIndex) * 100));
+document.getElementById('typingWpm').innerText = wpm;
+document.getElementById('typingAcc').innerText = accuracy + '%';
+}
+function resetTypingTest() {
+typingStarted = false;
+clearInterval(typingInterval);
+typingStartTime = null;
+typingCharIndex = 0;
+typingErrors = 0;
+document.getElementById('typingWpm').innerText = '0';
+document.getElementById('typingAcc').innerText = '100%';
+initTypingTest();
+}
+initTypingTest();
+startMemoryGame();
+</script>
+</body>
+</html>
